@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>新闻中国</title>
+	<link href="css/main.css" rel="stylesheet" type="text/css" />
+	<style>
+		@keyframes scrollNotice {
+			0% {
+				transform: translateX(100%);
+			}
+
+			100% {
+				transform: translateX(-100%);
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<div id="header">
+		<div id="top">
+			<div id="top_login">
+				<label>手机号:</label><input type="text" name="phone" value="" maxlength="11" size="11" />
+				<button id="getcode">发送验证码</button>
+				<label>验证码:</label><input type="password" name="code" value="" class="login_input" />
+				<input type="button" class="login_sub" value="登录" />&nbsp;<A href="regist.html">立即注册</A>
+				<img src="images/friend_logo.gif" alt="Google" id="friend_logo" />
+			</div>
+			<div id="top_login2" style="display: inline-flex;width: 100%;">
+				<div style="width:45%;text-indent:5px;height:30px;line-height:30px;"> 欢迎: <span id="currentuser"
+						style="font-weight: bold;color: blue;"></span></div>
+				<div style="width:50%;text-align:right;height:30px;line-height:30px;">
+					<a href="#" id="myCollection" style="cursor: pointer;">我的收藏</a>
+					<a href="collection.html" id="manageCollection" style="cursor: pointer;margin-left:10px;">管理收藏</a>
+					<a href="history.html" id="viewHistory" style="cursor: pointer;margin-left:10px;">浏览记录</a>
+					<a href="#" id="exit" style="cursor: pointer;margin-left:10px;">退出</a>
+				</div>
+			</div>
+		</div>
+		<div id="nav">
+			<div id="logo"> <img src="images/logo.jpg" alt="新闻中国" /> </div>
+			<div id="a_b01" style="margin-top: 25px;"> <img src="images/a_b01.gif" alt="" /> </div>
+			<!--mainnav end-->
+		</div>
+	</div>
+	<div id="container">
+		<div class="sidebar">
+			<h1> <img src="images/title_1.gif" alt="国内新闻" /> </h1>
+			<div class="side_list" style="padding: 2px">
+			</div>
+			<h1> <img src="images/title_2.gif" alt="国际新闻" /> </h1>
+			<div class="side_list" style="padding: 2px">
+
+			</div>
+			<h1> <img src="images/title_3.gif" alt="娱乐新闻" /> </h1>
+			<div class="side_list" style="padding: 2px">
+
+			</div>
+		</div>
+		<div class="main">
+			<!-- 公告横幅 -->
+			<div id="notice-bar"
+				style="display: none; background: linear-gradient(to right, #ffffff 0%, #e8f4fc 100%); padding: 10px 15px; margin-bottom: 5px; border: 1px solid #c5dff0; border-left: 3px solid #5d9cec; white-space: nowrap;">
+				<span style="color: #2d7dd2; font-weight: bold; font-size: 16px; vertical-align: middle;">🔔 公告：</span>
+				<span id="notice-wrapper"
+					style="display: inline-block; overflow: hidden; vertical-align: middle; max-width: calc(100% - 100px); line-height: 1.5;">
+					<span id="notice-content"
+						style="color: #1a5a99; font-size: 16px; display: inline-block; white-space: nowrap; vertical-align: middle;"></span>
+				</span>
+			</div>
+			<div class="class_type"> <img src="images/class_type.gif" alt="新闻中心" /> </div>
+			<div class="content">
+				<ul class="class_date">
+					<li id='class_month'> </li>
+				</ul>
+				<ul class="classlist">
+				</ul>
+				<p align="right" id="pagination"> 当前页数:[<span id="currentPage">1</span>/<span
+						id="totalPages">1</span>]&nbsp; <a href="#" id="firstPage">首页</a> <a href="#"
+						id="prevPage">上一页</a> <a href="#" id="nextPage">下一页</a> <a href="#" id="lastPage">末页</a> </p>
+			</div>
+			<div class="picnews">
+				<ul>
+					<li> <a href="#"><img src="images/Picture1.jpg" width="249" alt="" /> </a><a href="#">幻想中穿越时空</a>
+					</li>
+					<li> <a href="#"><img src="images/Picture2.jpg" width="249" alt="" /> </a><a href="#">国庆多变的发型</a>
+					</li>
+					<li> <a href="#"><img src="images/Picture3.jpg" width="249" alt="" /> </a><a href="#">新技术照亮都市</a>
+					</li>
+					<li> <a href="#"><img src="images/Picture4.jpg" width="249" alt="" /> </a><a href="#">群星闪耀红地毯</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div id="friend">
+		<h1 class="friend_t"> <img src="images/friend_ico.gif" alt="合作伙伴" /> </h1>
+		<div class="friend_list">
+			<ul>
+				<li> <a href="#">中国政府网</a> </li>
+				<li> <a href="#">中国政府网</a> </li>
+				<li> <a href="#">中国政府网</a> </li>
+				<li> <a href="#">中国政府网</a> </li>
+				<li> <a href="#">中国政府网</a> </li>
+				<li> <a href="#">中国政府网</a> </li>
+				<li> <a href="#">中国政府网</a> </li>
+			</ul>
+		</div>
+	</div>
+	<div id="footer">
+		<p class=""> 24小时客户服务热线：010-68988888 &#160;&#160;&#160;&#160; <a href="#">常见问题解答</a>
+			&#160;&#160;&#160;&#160; 新闻热线：010-627488888 <br />
+			文明办网文明上网举报电话：010-627488888 &#160;&#160;&#160;&#160; 举报邮箱： <a href="#">jubao@jb-aptech.com.cn</a> </p>
+		<p class="copyright"> Copyright &copy; 1999-2009 News China gov, All Right Reserver <br />
+			新闻中国 版权所有 </p>
+	</div>
+</body>
+
+</html>
+<script type="text/javascript" src="third-party/jquery-1.12.4.min.js">
+</script>
+<script type="text/javascript" src="third-party/global.js">
+</script>
+<script type="text/javascript" src="components/index.js">
+</script>

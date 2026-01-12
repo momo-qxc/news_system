@@ -1,0 +1,27 @@
+server:
+  port: 6060
+spring:
+  application:
+    name: newsmanager-gateway
+  main:
+    web-application-type: reactive
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: my_route
+              uri: http://localhost:9090
+              predicates:
+                - Path=/news/**
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOrigins: "*"
+                allowedMethods:
+                  - GET
+                  - POST
+                  - PUT
+                  - DELETE
+                  - OPTIONS
+                allowedHeaders: "*"

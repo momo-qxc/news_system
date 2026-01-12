@@ -1,0 +1,80 @@
+package com.newsmanager.core.controller;
+
+import com.newsmanager.api.models.NewsModel;
+import com.newsmanager.api.models.PagerTemplate;
+import com.newsmanager.core.service.NewsService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@Tag(name = "新闻文章接口")
+@RestController
+@RequestMapping("/news")
+public class NewsController {
+
+    @Autowired
+    private NewsService newsService;
+
+    @GetMapping("/get")
+    @Operation(summary = "分页查询新闻信息(仅审核通过)")
+    public PagerTemplate get(@RequestParam long pageno, @RequestParam long pagesize) {
+        return newsService.get(pageno, pagesize);
+    }
+
+    @GetMapping("/getAll")
+    @Operation(summary = "分页查询所有新闻(管理后台)")
+    public PagerTemplate getAll(@RequestParam long pageno, @RequestParam long pagesize) {
+        return newsService.getAll(pageno, pagesize);
+    }
+
+    @GetMapping("/getone")
+    @Operation(summary = "根据ID查询新闻")
+    public NewsModel getone(@RequestParam String nid) {
+        return newsService.getone(nid);
+    }
+
+    @GetMapping("/getbytid")
+    @Operation(description = "根据tid查询新闻信息")
+    public PagerTemplate getbytid(@RequestParam int pageno, @RequestParam int pagesize, @RequestParam int tid) {
+        return newsService.getnewsbytid(pageno, pagesize, tid);
+    }
+
+    @GetMapping("/getnewsbykeyword")
+    @Operation(summary = "根据关键字查询新闻")
+    public List<NewsModel> getnewsbykeyword(@RequestParam String keyword) {
+        return newsService.getnewsbykeyword(keyword);
+    }
+
+    @PostMapping("/save")
+    @Operation(summary = "新增新闻文章")
+    public void save(@RequestBody NewsModel newsModel) {
+        newsService.save(newsModel);
+    }
+
+    @DeleteMapping("/del/{nid}")
+    @Operation(summary = "删除新闻文章")
+    public void del(@PathVariable String nid) {
+        newsService.del(new NewsModel(nid));
+    }
+
+    @PutMapping("/update")
+    @Operation(summary = "修改新闻文章(全量)")
+    public void modify(@RequestBody NewsModel newsModel) {
+        newsService.modify(newsModel);
+    }
+
+    @PutMapping("/checknews")
+    @Operation(summary = "修改新闻：更新审核状态(指定字段)")
+    public void checknews(@RequestParam String nid, @RequestParam Integer status) {
+        newsService.checknews(nid, status);
+    }
+
+    @PutMapping("/updatelcnt")
+    @Operation(summary = "修改新闻：更新点赞数量(指定字段)")
+    public void updatelcnt(@RequestParam String nid, @RequestParam Integer cnt) {
+        newsService.updatelcnt(nid, cnt);
+    }
+}

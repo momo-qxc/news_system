@@ -1,0 +1,41 @@
+package com.newsmanager.core.service;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.newsmanager.api.models.ThemeModel;
+import com.newsmanager.core.mapper.ITheme;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class ThemeService {
+
+    @Autowired
+    private ITheme dao;
+
+    public List<ThemeModel> get() {
+        return new ThemeModel().selectAll();
+    }
+
+    public void save(ThemeModel tm) {
+        tm.insert();
+    }
+
+    public void del(ThemeModel themeModel) {
+        QueryWrapper<ThemeModel> qw = new QueryWrapper<>();
+        qw.eq("tid", themeModel.getTid());
+        themeModel.delete(qw);
+    }
+
+    public void modify(ThemeModel themeModel) {
+        UpdateWrapper<ThemeModel> uw = new UpdateWrapper<>();
+        uw.eq("tid", themeModel.getTid());
+        themeModel.update(uw);
+    }
+
+    public ThemeModel getone(int tid) {
+        return new ThemeModel().selectById(tid);
+    }
+}

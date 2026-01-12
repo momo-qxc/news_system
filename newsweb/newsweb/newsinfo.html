@@ -1,0 +1,233 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>新闻详情 - 新闻中国</title>
+	<link href="css/main.css" rel="stylesheet" type="text/css" />
+	<style>
+		.news-container {
+			border: 2px solid blue;
+			padding: 30px;
+			min-height: 400px;
+		}
+
+		.news-title {
+			text-align: center;
+			font-size: 24px;
+			font-weight: bold;
+			color: #0066cc;
+			margin-bottom: 30px;
+		}
+
+		.news-content {
+			line-height: 1.8;
+			font-size: 14px;
+			color: #333;
+			text-indent: 2em;
+			margin-bottom: 30px;
+		}
+
+		.news-meta {
+			text-align: right;
+			color: #666;
+			font-size: 12px;
+		}
+
+		.news-author {
+			margin-bottom: 5px;
+			color: #0066cc;
+		}
+
+		.news-date {
+			color: #888;
+		}
+
+		/* 点赞和收藏图标 */
+		.action-icons {
+			text-align: right;
+			margin-top: 10px;
+			font-size: 20px;
+		}
+
+		.icon-heart,
+		.icon-star {
+			cursor: pointer;
+			margin-left: 10px;
+			transition: color 0.3s;
+		}
+
+		.icon-heart {
+			font-size: 24px;
+			color: transparent;
+			-webkit-text-stroke: 1px #888;
+		}
+
+		.icon-heart:hover {
+			-webkit-text-stroke: 1px #ff69b4;
+		}
+
+		.icon-heart.liked {
+			color: #ff69b4;
+			-webkit-text-stroke: 1px #ff69b4;
+		}
+
+		.icon-star {
+			color: #333;
+		}
+
+		.icon-star:hover {
+			color: #ffd700;
+		}
+
+		.icon-star.collected {
+			color: #ffd700;
+		}
+
+		/* 评论区域 */
+		.comment-section {
+			margin-top: 30px;
+			border-top: 1px solid #ddd;
+			padding-top: 20px;
+		}
+
+		.comment-input-area {
+			display: flex;
+			align-items: flex-start;
+			margin-bottom: 20px;
+		}
+
+		.comment-label {
+			width: 80px;
+			padding-top: 10px;
+		}
+
+		.comment-textarea {
+			flex: 1;
+			height: 100px;
+			padding: 10px;
+			border: 1px solid #333;
+			resize: none;
+		}
+
+		.comment-submit {
+			margin-left: 10px;
+			padding: 10px 20px;
+			background-color: #0066cc;
+			color: white;
+			border: none;
+			cursor: pointer;
+		}
+
+		.comment-submit:hover {
+			background-color: #0055aa;
+		}
+
+		.comment-list {
+			margin-top: 20px;
+		}
+
+		.comment-item {
+			padding: 10px 0;
+			border-bottom: 1px solid #eee;
+		}
+
+		.comment-user {
+			color: #0066cc;
+			font-weight: bold;
+		}
+
+		.comment-content {
+			margin: 5px 0;
+		}
+
+		.comment-time {
+			color: #888;
+			font-size: 12px;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="header">
+		<div id="top">
+			<div id="top_login">
+				<label>手机号:</label><input type="text" name="phone" value="" maxlength="11" size="11" />
+				<button id="getcode">发送验证码</button>
+				<label>验证码:</label><input type="password" name="code" value="" class="login_input" />
+				<input type="button" class="login_sub" value="登录" />&nbsp;<a href="regist.html">立即注册</a>
+				<img src="images/friend_logo.gif" alt="Google" id="friend_logo" />
+			</div>
+			<div id="top_login2" style="display: inline-flex;width: 100%;">
+				<div style="width:45%;text-indent:5px;height:30px;line-height:30px;"> 欢迎: <span id="currentuser"
+						style="font-weight: bold;color: blue;"></span></div>
+				<div style="width:50%;text-align:right;height:30px;line-height:30px;">
+					<a href="index.html" style="cursor: pointer;">返回首页</a>
+					<a href="#" id="exit" style="cursor: pointer;margin-left:10px;">退出</a>
+				</div>
+			</div>
+		</div>
+		<div id="nav">
+			<div id="logo"> <img src="images/logo.jpg" alt="新闻中国" /> </div>
+			<div id="a_b01" style="margin-top: 25px;"> <img src="images/a_b01.gif" alt="" /> </div>
+		</div>
+	</div>
+	<div id="container" class="news-container">
+		<h1 class="news-title" id="newsTitle">加载中...</h1>
+		<div class="news-content" id="newsContent">
+			<!-- 新闻内容将在这里显示 -->
+		</div>
+		<div class="news-meta">
+			<div class="news-author" id="newsAuthor"></div>
+			<div class="news-date" id="newsDate"></div>
+			<div class="action-icons">
+				<span class="icon-heart" id="likeBtn" title="点赞">&#9829;</span>
+				<span class="icon-star" id="collectBtn" title="收藏">&#9734;</span>
+			</div>
+		</div>
+
+		<!-- 评论区域 -->
+		<div class="comment-section">
+			<div class="comment-input-area">
+				<span class="comment-label">我要评论:</span>
+				<textarea class="comment-textarea" id="commentInput" placeholder="请输入评论内容..."></textarea>
+				<button class="comment-submit" id="submitComment">提交</button>
+			</div>
+			<div style="margin-left: 80px; margin-bottom: 15px;">
+				<label><input type="checkbox" id="anonymousCheck"> 匿名评论</label>
+			</div>
+			<div class="comment-list" id="commentList">
+				<!-- 评论列表将在这里显示 -->
+			</div>
+		</div>
+	</div>
+	<div id="friend">
+		<h1 class="friend_t"> <img src="images/friend_ico.gif" alt="合作伙伴" /> </h1>
+		<div class="friend_list">
+			<ul>
+				<li> <a href="#">中国政府网</a> </li>
+				<li> <a href="#">中国政府网</a> </li>
+				<li> <a href="#">中国政府网</a> </li>
+				<li> <a href="#">中国政府网</a> </li>
+				<li> <a href="#">中国政府网</a> </li>
+				<li> <a href="#">中国政府网</a> </li>
+				<li> <a href="#">中国政府网</a> </li>
+			</ul>
+		</div>
+	</div>
+	<div id="footer">
+		<p class=""> 24小时客户服务热线：010-68988888 &#160;&#160;&#160;&#160; <a href="#">常见问题解答</a>
+			&#160;&#160;&#160;&#160; 新闻热线：010-627488888 <br />
+			文明办网文明上网举报电话：010-627488888 &#160;&#160;&#160;&#160; 举报邮箱： <a href="#">jubao@jb-aptech.com.cn</a> </p>
+		<p class="copyright"> Copyright &copy; 1999-2009 News China gov, All Right Reserver <br />
+			新闻中国 版权所有 </p>
+	</div>
+</body>
+
+</html>
+<script type="text/javascript" src="third-party/jquery-1.12.4.min.js">
+</script>
+<script type="text/javascript" src="third-party/global.js">
+</script>
+<script type="text/javascript" src="components/newsinfo.js">
+</script>

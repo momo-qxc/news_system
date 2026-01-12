@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>新闻中国 - 浏览记录</title>
+    <link href="css/main.css" rel="stylesheet" type="text/css" />
+    <style>
+        .history-container {
+            border: 2px solid #5d9cec;
+            padding: 20px;
+            min-height: 400px;
+            background-color: #fff;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+
+        .history-item:hover {
+            background-color: #f9fbfe;
+        }
+
+        .news-info {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-title {
+            color: #2d7dd2;
+            font-size: 16px;
+            text-decoration: none;
+            margin-bottom: 5px;
+        }
+
+        .news-title:hover {
+            text-decoration: underline;
+        }
+
+        .view-time {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .btn-delete {
+            background-color: #fff;
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+            padding: 4px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .btn-delete:hover {
+            background-color: #e74c3c;
+            color: #fff;
+        }
+
+        .empty-msg {
+            text-align: center;
+            color: #999;
+            padding: 80px 0;
+            font-size: 15px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #5d9cec;
+        }
+
+        .history-header h2 {
+            margin: 0;
+            color: #333;
+        }
+
+        /* 消息提示框样式 */
+        #msgContainer {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            width: 300px;
+        }
+
+        .msg-box {
+            padding: 12px 20px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            font-size: 14px;
+            color: #fff;
+            animation: fadeInDown 0.3s ease-out;
+        }
+
+        .msg-success {
+            background-color: #2ecc71;
+        }
+
+        .msg-error {
+            background-color: #e74c3c;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="msgContainer"></div>
+    <div id="header">
+        <div id="top">
+            <div id="top_login2" style="display: inline-flex;width: 100%;">
+                <div style="width:45%;text-indent:5px;height:30px;line-height:30px;"> 欢迎: <span id="currentuser"
+                        style="font-weight: bold;color: blue;"></span></div>
+                <div style="width:50%;text-align:right;height:30px;line-height:30px;">
+                    <a href="index.html" style="cursor: pointer;">返回首页</a>
+                    <a href="#" id="exit" style="cursor: pointer;margin-left:10px;">退出</a>
+                </div>
+            </div>
+        </div>
+        <div id="nav">
+            <div id="logo"> <img src="images/logo.jpg" alt="新闻中国" /> </div>
+            <div id="a_b01" style="margin-top: 25px;"> <img src="images/a_b01.gif" alt="" /> </div>
+        </div>
+    </div>
+    <div id="container" class="history-container">
+        <div class="history-header">
+            <h2>我的浏览记录</h2>
+            <button id="clearAll" class="btn-delete btn-clear-all"
+                style="border-radius: 20px; padding: 6px 20px;">清空所有记录</button>
+        </div>
+        <div id="historyList">
+            <!-- 记录列表将在这里动态生成内容内容内容内容内容内容内容内容内容内容内容内容 -->
+        </div>
+    </div>
+    <div id="footer">
+        <p class="copyright"> Copyright &copy; 1999-2009 News China gov, All Right Reserver <br />
+            新闻中国 版权所有 </p>
+    </div>
+</body>
+
+</html>
+<script type="text/javascript" src="third-party/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="third-party/global.js"></script>
+<script type="text/javascript" src="components/history.js"></script>

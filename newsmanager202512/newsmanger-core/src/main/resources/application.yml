@@ -1,0 +1,26 @@
+#配置数据库
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/news_system
+    username: root
+    password: root
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  application:
+    name: newsmanagercore
+
+
+server:
+  port: 8888
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:7001/eureka,http://127.0.0.1:7002/eureka,http://127.0.0.1:7003/eureka

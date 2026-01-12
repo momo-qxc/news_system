@@ -1,0 +1,15 @@
+server:
+  port: 9090
+spring:
+  application:
+    name: newsmanager-customer
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/news_system
+    username: root
+    password: root
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:7001/eureka,http://127.0.0.1:7002/eureka,http://127.0.0.1:7003/eureka
+
