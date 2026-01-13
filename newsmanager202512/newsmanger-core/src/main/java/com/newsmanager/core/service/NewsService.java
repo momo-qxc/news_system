@@ -59,7 +59,9 @@ public class NewsService {
     }
 
     public void save(NewsModel newsModel) {
-        newsModel.setNid(UUID.randomUUID().toString());
+        if (newsModel.getNid() == null || newsModel.getNid().isEmpty()) {
+            newsModel.setNid(UUID.randomUUID().toString());
+        }
         newsModel.insert();
     }
 
@@ -104,5 +106,11 @@ public class NewsService {
         pt.setTotal(mypage.getTotal());
         pt.setTotalpage(mypage.getPages());
         return pt;
+    }
+
+    public NewsModel getbytitle(String title) {
+        QueryWrapper<NewsModel> qw = new QueryWrapper<>();
+        qw.eq("ntitle", title);
+        return new NewsModel().selectOne(qw);
     }
 }

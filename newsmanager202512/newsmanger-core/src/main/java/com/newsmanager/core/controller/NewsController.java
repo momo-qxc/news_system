@@ -42,6 +42,12 @@ public class NewsController {
         return newsService.getnewsbytid(pageno, pagesize, tid);
     }
 
+    @GetMapping("/getbytitle")
+    @Operation(summary = "根据标题查询新闻")
+    public NewsModel getbytitle(@RequestParam String title) {
+        return newsService.getbytitle(title);
+    }
+
     @GetMapping("/getnewsbykeyword")
     @Operation(summary = "根据关键字查询新闻")
     public List<NewsModel> getnewsbykeyword(@RequestParam String keyword) {

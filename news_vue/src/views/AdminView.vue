@@ -44,6 +44,10 @@
 							<i class="el-icon-s-comment"></i>
 							<span>评论管理</span>
 						</el-menu-item>
+						<el-menu-item index="crawler">
+							<i class="el-icon-cpu"></i>
+							<span>新闻脉冲</span>
+						</el-menu-item>
 						<el-menu-item index="profile">
 							<i class="el-icon-s-check"></i>
 							<span>个人信息</span>
@@ -372,8 +376,80 @@
 					</el-dialog>
 				</div>
 				
+				<!-- 新闻脉冲 (爬虫管理) -->
+				<div v-if="activeMenu === 'crawler'" class="content-card">
+					<div class="card-header">
+						<span>新闻脉冲 - 实时采集系统</span>
+						<el-tag :type="crawlerStatus ? 'danger' : 'success'" effect="dark">
+							{{ crawlerStatus ? '运行中' : '空闲' }}
+						</el-tag>
+					</div>
+					
+					<el-row :gutter="20">
+						<el-col :span="8">
+							<div class="crawler-controls">
+								<h4 class="control-title">采集任务设置</h4>
+								<el-form :model="crawlerForm" label-width="80px" size="small">
+									<el-form-item label="采集分类">
+										<el-select v-model="crawlerForm.tid" placeholder="全部分类" style="width: 100%;">
+											<el-option label="全部分类" :value="0"></el-option>
+											<el-option 
+												v-for="item in themeList" 
+												:key="item.tid" 
+												:label="item.tname" 
+												:value="item.tid"></el-option>
+										</el-select>
+									</el-form-item>
+									<el-form-item label="单类上限">
+										<el-slider v-model="crawlerForm.limit" :min="1" :max="50" show-input></el-slider>
+									</el-form-item>
+									<el-form-item>
+										<el-button 
+											type="primary" 
+											icon="el-icon-video-play" 
+											:loading="crawlerStatus"
+											@click="startCrawl"
+											style="width: 100%;">立即启动</el-button>
+									</el-form-item>
+									<el-form-item>
+										<el-button 
+											icon="el-icon-delete" 
+											@click="clearCrawlerLogs"
+											style="width: 100%;">清空日志</el-button>
+									</el-form-item>
+								</el-form>
+								
+								<div class="crawler-tips">
+									<i class="el-icon-info"></i>
+									<span>提示：采集任务将在后台异步执行，您可以切换到其他页面操作，日志会持续更新。</span>
+								</div>
+							</div>
+						</el-col>
+						<el-col :span="16">
+							<div class="crawler-terminal">
+								<div class="terminal-header">
+									<span class="dot red"></span>
+									<span class="dot yellow"></span>
+									<span class="dot green"></span>
+									<span class="terminal-title">Pulse Output Console</span>
+								</div>
+								<div class="terminal-body" ref="terminalBody">
+									<div v-if="crawlerLogs.length === 0" class="log-empty">等待任务启动...</div>
+									<div 
+										v-for="(log, index) in crawlerLogs" 
+										:key="index" 
+										class="log-line"
+										:class="{ 'log-error': log.includes('❌'), 'log-success': log.includes('✅') || log.includes('✓') }">
+										{{ log }}
+									</div>
+								</div>
+							</div>
+						</el-col>
+					</el-row>
+				</div>
+				
 				<!-- 其他页面占位 -->
-				<div v-if="activeMenu !== 'home' && activeMenu !== 'theme' && activeMenu !== 'news' && activeMenu !== 'comment' && activeMenu !== 'profile' && activeMenu !== 'notice'" class="content-placeholder">
+				<div v-if="activeMenu !== 'home' && activeMenu !== 'theme' && activeMenu !== 'news' && activeMenu !== 'comment' && activeMenu !== 'profile' && activeMenu !== 'notice' && activeMenu !== 'crawler'" class="content-placeholder">
 					<h2>{{ getMenuTitle() }}</h2>
 					<p>功能开发中...</p>
 				</div>
@@ -419,7 +495,12 @@ export default {
 			noticeList: [],
 			showAddNotice: false,
 			editingNotice: null,
-			noticeForm: { content: '', target: 0, visible: 1, priority: 2 }
+			noticeForm: { content: '', target: 0, visible: 1, priority: 2 },
+			// 新闻脉冲
+			crawlerForm: { tid: 0, limit: 10 },
+			crawlerLogs: [],
+			crawlerStatus: false,
+			crawlerTimer: null
 		};
 	},
 	created() {
@@ -477,6 +558,17 @@ export default {
 			if (newVal === 'notice') {
 				this.loadNotices();
 			}
+			// 切换到新闻脉冲时
+			if (newVal === 'crawler') {
+				this.loadThemes(); // 确保分类列表加载
+				this.fetchCrawlerLogs();
+				this.crawlerTimer = setInterval(this.fetchCrawlerLogs, 2000);
+			} else {
+				if (this.crawlerTimer) {
+					clearInterval(this.crawlerTimer);
+					this.crawlerTimer = null;
+				}
+			}
 		}
 	},
 	methods: {
@@ -499,7 +591,8 @@ export default {
 				'news': '新闻管理',
 				'notice': '系统公告',
 				'comment': '评论管理',
-				'profile': '个人信息'
+				'profile': '个人信息',
+				'crawler': '新闻脉冲'
 			};
 			return titles[this.activeMenu] || '';
 		},
@@ -920,6 +1013,49 @@ export default {
 					this.$message.error('删除失败');
 				});
 			}).catch(() => {});
+		},
+		// 新闻脉冲相关方法
+		startCrawl() {
+			this.$confirm('确定启动采集任务吗？', '提示', {
+				confirmButtonText: '启动',
+				cancelButtonText: '取消',
+				type: 'primary'
+			}).then(() => {
+				axios.post('http://localhost:6060/news/crawler/run', {
+					tid: this.crawlerForm.tid === 0 ? null : this.crawlerForm.tid,
+					limit: this.crawlerForm.limit
+				}).then(res => {
+					this.$message.success(res.data);
+					this.fetchCrawlerLogs();
+				}).catch(err => {
+					console.error(err);
+					this.$message.error('启动失败');
+				});
+			}).catch(() => {});
+		},
+		fetchCrawlerLogs() {
+			axios.get('http://localhost:6060/news/crawler/logs')
+				.then(res => {
+					this.crawlerLogs = res.data || [];
+					this.$nextTick(() => {
+						const container = this.$refs.terminalBody;
+						if (container) {
+							container.scrollTop = container.scrollHeight;
+						}
+					});
+				}).catch(err => console.log(err));
+			
+			axios.get('http://localhost:6060/news/crawler/status')
+				.then(res => {
+					this.crawlerStatus = res.data;
+				}).catch(err => console.log(err));
+		},
+		clearCrawlerLogs() {
+			axios.post('http://localhost:6060/news/crawler/clear-logs')
+				.then(() => {
+					this.crawlerLogs = [];
+					this.$message.success('日志已清空');
+				}).catch(err => console.log(err));
 		}
 	}
 }
@@ -1064,5 +1200,112 @@ export default {
 
 .profile-tab i {
 	margin-right: 6px;
+}
+
+/* 爬虫脉冲样式 */
+.crawler-controls {
+	background: #f8f9fb;
+	padding: 20px;
+	border-radius: 8px;
+	border: 1px solid #ebeef5;
+}
+
+.control-title {
+	margin: 0 0 20px 0;
+	color: #303133;
+	font-size: 15px;
+	display: flex;
+	align-items: center;
+}
+
+.control-title::before {
+	content: '';
+	width: 4px;
+	height: 16px;
+	background: #409EFF;
+	margin-right: 10px;
+	border-radius: 2px;
+}
+
+.crawler-tips {
+	margin-top: 20px;
+	padding: 12px;
+	background: #ecf5ff;
+	border-radius: 4px;
+	color: #409EFF;
+	font-size: 12px;
+	line-height: 1.6;
+	display: flex;
+	gap: 8px;
+}
+
+.crawler-terminal {
+	background: #1e1e1e;
+	border-radius: 8px;
+	box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+	overflow: hidden;
+}
+
+.terminal-header {
+	background: #333;
+	padding: 10px 15px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.dot {
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+}
+.dot.red { background: #ff5f56; }
+.dot.yellow { background: #ffbd2e; }
+.dot.green { background: #27c93f; }
+
+.terminal-title {
+	color: #999;
+	font-size: 12px;
+	margin-left: 10px;
+	font-family: 'Courier New', Courier, monospace;
+}
+
+.terminal-body {
+	height: 400px;
+	padding: 15px;
+	overflow-y: auto;
+	font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+	font-size: 13px;
+	line-height: 1.5;
+	color: #d4d4d4;
+	background: #1e1e1e;
+}
+
+.log-line {
+	margin-bottom: 4px;
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.log-empty {
+	color: #555;
+	text-align: center;
+	margin-top: 150px;
+	font-style: italic;
+}
+
+.log-success { color: #4ec9b0; }
+.log-error { color: #f44336; }
+
+/* 滚动条美化 */
+.terminal-body::-webkit-scrollbar {
+	width: 8px;
+}
+.terminal-body::-webkit-scrollbar-thumb {
+	background: #444;
+	border-radius: 4px;
+}
+.terminal-body::-webkit-scrollbar-track {
+	background: #222;
 }
 </style>
