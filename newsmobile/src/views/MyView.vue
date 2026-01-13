@@ -244,6 +244,7 @@
 
 <script>
 import axios from 'axios'
+import API_BASE_URL from '@/config/api'
 
 export default {
   name: 'MyView',
@@ -297,19 +298,19 @@ export default {
     async loadCounts() {
       try {
         // 获取收藏数量
-        const colRes = await axios.get(`http://localhost:6060/news/collection/getdetail?phone=${this.phone}`)
+        const colRes = await axios.get(`${API_BASE_URL}/news/collection/getdetail?phone=${this.phone}`)
         let colData = colRes.data
         if (typeof colData === 'string') colData = JSON.parse(colData)
         this.collectionCount = colData ? colData.length : 0
 
         // 获取点赞数量
-        const likeRes = await axios.get(`http://localhost:6060/news/like/getbyphone?phone=${this.phone}`)
+        const likeRes = await axios.get(`${API_BASE_URL}/news/like/getbyphone?phone=${this.phone}`)
         let likeData = likeRes.data
         if (typeof likeData === 'string') likeData = JSON.parse(likeData)
         this.likeCount = likeData ? likeData.length : 0
 
         // 获取浏览记录数量
-        const histRes = await axios.get(`http://localhost:6060/news/history/getdetail?phone=${this.phone}`)
+        const histRes = await axios.get(`${API_BASE_URL}/news/history/getdetail?phone=${this.phone}`)
         let histData = histRes.data
         if (typeof histData === 'string') histData = JSON.parse(histData)
         this.historyCount = histData ? histData.length : 0
@@ -327,7 +328,7 @@ export default {
       }
 
       try {
-        await axios.get(`http://localhost:6060/news/users/getcode?phone=${phone}`)
+        await axios.get(`${API_BASE_URL}/news/users/getcode?phone=${phone}`)
         this.$toast.success('验证码已发送')
         this.startCountdown()
       } catch (e) {
@@ -355,7 +356,7 @@ export default {
         params.append('phone', this.loginForm.phone)
         params.append('code', this.loginForm.code)
         
-        const res = await axios.post('http://localhost:6060/news/users/login', params)
+        const res = await axios.post(`${API_BASE_URL}/news/users/login`, params)
         
         let result = res.data
         console.log('Login response:', result, typeof result)
@@ -388,7 +389,7 @@ export default {
           params.append('age', this.registerForm.age)
         }
         
-        const res = await axios.post('http://localhost:6060/news/users/add', params)
+        const res = await axios.post(`${API_BASE_URL}/news/users/add`, params)
         
         let result = res.data
         console.log('Register response:', result)
@@ -443,11 +444,11 @@ export default {
       try {
         let url = ''
         if (this.listType === 'collection') {
-          url = `http://localhost:6060/news/collection/getdetail?phone=${this.phone}`
+          url = `${API_BASE_URL}/news/collection/getdetail?phone=${this.phone}`
         } else if (this.listType === 'like') {
-          url = `http://localhost:6060/news/like/getbyphone?phone=${this.phone}`
+          url = `${API_BASE_URL}/news/like/getbyphone?phone=${this.phone}`
         } else {
-          url = `http://localhost:6060/news/history/getdetail?phone=${this.phone}`
+          url = `${API_BASE_URL}/news/history/getdetail?phone=${this.phone}`
         }
 
         const res = await axios.get(url)
@@ -482,17 +483,17 @@ export default {
         
         let url = ''
         if (this.listType === 'collection') {
-          url = `http://localhost:6060/news/collection/del/${item.colid}`
+          url = `${API_BASE_URL}/news/collection/del/${item.colid}`
         } else if (this.listType === 'like') {
           // 点赞使用 toggle 来取消
-          url = `http://localhost:6060/news/like/toggle?phone=${this.phone}&nid=${item.nid}`
+          url = `${API_BASE_URL}/news/like/toggle?phone=${this.phone}&nid=${item.nid}`
           await axios.post(url)
           this.$toast.success('已删除')
           this.listData = this.listData.filter(i => i.lid !== item.lid)
           this.likeCount = Math.max(0, this.likeCount - 1)
           return
         } else {
-          url = `http://localhost:6060/news/history/del/${item.hid}`
+          url = `${API_BASE_URL}/news/history/del/${item.hid}`
         }
         
         await axios.delete(url)
@@ -522,7 +523,7 @@ export default {
           message: '确定要清空所有浏览记录吗？'
         })
         
-        await axios.delete(`http://localhost:6060/news/history/clear?phone=${this.phone}`)
+        await axios.delete(`${API_BASE_URL}/news/history/clear?phone=${this.phone}`)
         this.$toast.success('已清空')
         this.listData = []
         this.historyCount = 0

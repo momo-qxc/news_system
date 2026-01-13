@@ -63,6 +63,7 @@
 
 <script>
 import axios from 'axios'
+import API_BASE_URL from '@/config/api'
 
 export default {
   name: 'HomeView',
@@ -91,7 +92,7 @@ export default {
   methods: {
     init() {
       // 获取主题列表
-      axios.get('http://localhost:6060/news/theme/get')
+      axios.get(`${API_BASE_URL}/news/theme/get`)
         .then(response => {
           let data = response.data;
           if (typeof data === "string") {
@@ -112,9 +113,9 @@ export default {
     onLoad() {
       let url = '';
       if (this.currentTid === -1) {
-        url = `http://localhost:6060/news/newsinfo/get?pageno=${this.pageno}&pagesize=${this.pagesize}`;
+        url = `${API_BASE_URL}/news/newsinfo/get?pageno=${this.pageno}&pagesize=${this.pagesize}`;
       } else {
-        url = `http://localhost:6060/news/newsinfo/getbytid?pageno=${this.pageno}&pagesize=${this.pagesize}&tid=${this.currentTid}`;
+        url = `${API_BASE_URL}/news/newsinfo/getbytid?pageno=${this.pageno}&pagesize=${this.pagesize}&tid=${this.currentTid}`;
       }
       
       axios.get(url)

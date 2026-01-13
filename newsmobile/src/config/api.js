@@ -4,8 +4,8 @@
 // 开发环境
 // const API_BASE_URL = 'http://localhost:6060'
 
-// 内网测试（改成你电脑的内网 IP）
-const API_BASE_URL = 'http://192.168.1.100:6060'
+// 内网测试（你电脑的 WLAN IP 地址）
+const API_BASE_URL = 'http://192.168.211.71:6060'
 
 // 公网部署（如果有服务器）
 // const API_BASE_URL = 'http://你的服务器IP:6060'

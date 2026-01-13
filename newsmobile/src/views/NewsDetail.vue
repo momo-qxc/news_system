@@ -117,6 +117,7 @@
 
 <script>
 import axios from 'axios'
+import API_BASE_URL from '@/config/api'
 
 export default {
   name: 'NewsDetail',
@@ -155,7 +156,7 @@ export default {
     // 获取当前用户信息
     async getCurrentUser() {
       try {
-        const res = await axios.get(`http://localhost:6060/news/users/getbyphone?phone=${this.phone}`)
+        const res = await axios.get(`${API_BASE_URL}/news/users/getbyphone?phone=${this.phone}`)
         let data = res.data
         if (typeof data === 'string') data = JSON.parse(data)
         if (data && data.uid) {
@@ -170,7 +171,7 @@ export default {
     async loadNews() {
       this.loading = true
       try {
-        const res = await axios.get(`http://localhost:6060/news/newsinfo/getone?nid=${this.nid}`)
+        const res = await axios.get(`${API_BASE_URL}/news/newsinfo/getone?nid=${this.nid}`)
         let data = res.data
         if (typeof data === 'string') data = JSON.parse(data)
         
@@ -199,7 +200,7 @@ export default {
       if (!this.phone) return
       try {
         const createdate = encodeURIComponent(new Date().toLocaleString())
-        await axios.post(`http://localhost:6060/news/history/save?phone=${this.phone}&nid=${this.nid}&createdate=${createdate}`)
+        await axios.post(`${API_BASE_URL}/news/history/save?phone=${this.phone}&nid=${this.nid}&createdate=${createdate}`)
       } catch (e) {
         console.error('Save history error:', e)
       }
@@ -208,7 +209,7 @@ export default {
     // 检查是否已点赞
     async checkIfLiked() {
       try {
-        const res = await axios.get(`http://localhost:6060/news/like/check?phone=${this.phone}&nid=${this.nid}`)
+        const res = await axios.get(`${API_BASE_URL}/news/like/check?phone=${this.phone}&nid=${this.nid}`)
         let data = res.data
         if (typeof data === 'string') data = JSON.parse(data)
         this.isLiked = data.liked
@@ -220,7 +221,7 @@ export default {
     // 检查是否已收藏
     async checkIfCollected() {
       try {
-        const res = await axios.get(`http://localhost:6060/news/collection/getdetail?phone=${this.phone}`)
+        const res = await axios.get(`${API_BASE_URL}/news/collection/getdetail?phone=${this.phone}`)
         let data = res.data
         if (typeof data === 'string') data = JSON.parse(data)
         if (data && data.length > 0) {
@@ -244,7 +245,7 @@ export default {
         return
       }
       try {
-        const res = await axios.post(`http://localhost:6060/news/like/toggle?phone=${this.phone}&nid=${this.nid}`)
+        const res = await axios.post(`${API_BASE_URL}/news/like/toggle?phone=${this.phone}&nid=${this.nid}`)
         let data = res.data
         if (typeof data === 'string') data = JSON.parse(data)
         this.isLiked = data.liked
@@ -265,7 +266,7 @@ export default {
       if (this.isCollected) {
         // 取消收藏
         try {
-          await axios.delete(`http://localhost:6060/news/collection/del/${this.currentColid}`)
+          await axios.delete(`${API_BASE_URL}/news/collection/del/${this.currentColid}`)
           this.isCollected = false
           this.currentColid = null
           this.$toast('已取消收藏')
@@ -280,7 +281,7 @@ export default {
           params.append('phone', this.phone)
           params.append('nid', this.nid)
           params.append('createdate', new Date().toLocaleString())
-          await axios.post('http://localhost:6060/news/collection/save', params)
+          await axios.post(`${API_BASE_URL}/news/collection/save`, params)
           this.isCollected = true
           this.$toast.success('收藏成功')
           // 重新获取 colid
@@ -300,7 +301,7 @@ export default {
     // 加载评论列表
     async loadComments() {
       try {
-        const res = await axios.get(`http://localhost:6060/news/comment/getbynid?nid=${this.nid}&phone=${this.phone || ''}`)
+        const res = await axios.get(`${API_BASE_URL}/news/comment/getbynid?nid=${this.nid}&phone=${this.phone || ''}`)
         let data = res.data
         if (typeof data === 'string') data = JSON.parse(data)
         this.comments = data || []
@@ -327,7 +328,7 @@ export default {
         params.append('content', this.commentContent)
         params.append('createdate', new Date().toLocaleString())
         params.append('anonymous', this.isAnonymous)
-        await axios.post('http://localhost:6060/news/comment/save', params)
+        await axios.post(`${API_BASE_URL}/news/comment/save`, params)
         this.$toast.success('评论成功')
         this.commentContent = ''
         this.isAnonymous = false
@@ -345,7 +346,7 @@ export default {
           title: '提示',
           message: '确定要删除这条评论吗？'
         })
-        await axios.delete(`http://localhost:6060/news/comment/del/${cid}`)
+        await axios.delete(`${API_BASE_URL}/news/comment/del/${cid}`)
         this.$toast.success('删除成功')
         this.loadComments()
       } catch (e) {
