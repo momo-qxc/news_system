@@ -19,9 +19,9 @@ public class CommentController {
     private RestTemplate restTemplate;
 
     @GetMapping("/getbynid")
-    @Operation(description = "根据新闻ID查询评论（包含用户名）")
+    @Operation(description = "根据新闻ID查询评论树（包含用户名、点赞等）")
     public String getByNid(@RequestParam String nid, @RequestParam(required = false) String phone) {
-        String url = SERVICE_PATH1 + "/comment/getbynidwithuser?nid=" + nid;
+        String url = SERVICE_PATH1 + "/comment/getbynidwithtree?nid=" + nid;
 
         // 如果有登录用户，根据 phone 获取 uid
         if (phone != null && !phone.isEmpty()) {
@@ -45,10 +45,11 @@ public class CommentController {
     }
 
     @PostMapping("/save")
-    @Operation(description = "新增评论")
+    @Operation(description = "新增评论/回复")
     public void save(@RequestParam String phone, @RequestParam String nid,
             @RequestParam String content, @RequestParam(required = false) String createdate,
-            @RequestParam(required = false) boolean anonymous) {
+            @RequestParam(required = false) boolean anonymous,
+            @RequestParam(required = false, defaultValue = "0") Integer pid) {
 
         // 根据 phone 查询 uid
         String userJson = restTemplate.getForObject(SERVICE_PATH1 + "/user/getbyphone?phone=" + phone, String.class);
@@ -74,6 +75,7 @@ public class CommentController {
         }
         params.add("nid", nid);
         params.add("content", content);
+        params.add("pid", String.valueOf(pid));
         params.add("createdate", createdate != null ? createdate
                 : new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date()));
 
@@ -100,5 +102,42 @@ public class CommentController {
     @Operation(description = "审核评论")
     public void check(@RequestParam Integer cid, @RequestParam Integer status) {
         restTemplate.put(SERVICE_PATH1 + "/comment/update?cid=" + cid + "&status=" + status, null);
+    }
+
+    @PostMapping("/like")
+    @Operation(description = "点赞评论")
+    public void like(@RequestParam Integer cid, @RequestParam String phone) {
+        Integer uid = getUidByPhone(phone);
+        if (uid != null) {
+            restTemplate.postForObject(SERVICE_PATH1 + "/comment/like?cid=" + cid + "&uid=" + uid, null, String.class);
+        }
+    }
+
+    @PostMapping("/unlike")
+    @Operation(description = "取消点赞")
+    public void unlike(@RequestParam Integer cid, @RequestParam String phone) {
+        Integer uid = getUidByPhone(phone);
+        if (uid != null) {
+            restTemplate.postForObject(SERVICE_PATH1 + "/comment/unlike?cid=" + cid + "&uid=" + uid, null,
+                    String.class);
+        }
+    }
+
+    private Integer getUidByPhone(String phone) {
+        if (phone == null || phone.isEmpty())
+            return null;
+        String userJson = restTemplate.getForObject(SERVICE_PATH1 + "/user/getbyphone?phone=" + phone, String.class);
+        if (userJson != null && !userJson.equals("null")) {
+            try {
+                com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                com.fasterxml.jackson.databind.JsonNode node = mapper.readTree(userJson);
+                if (node.has("uid")) {
+                    return node.get("uid").asInt();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 }

@@ -40,4 +40,21 @@ public class CommentModel extends Model<CommentModel> implements Serializable {
     @Schema(description = "状态(0:待审核, 1:已通过)")
     @TableField
     private Integer status;
+
+    @Schema(description = "父评论ID")
+    @TableField
+    private Integer pid;
+
+    // 以下为非数据库持久化字段，用于前端展示
+    @TableField(exist = false)
+    private java.util.List<CommentModel> replyList;
+
+    @TableField(exist = false)
+    private Integer likeCount;
+
+    @TableField(exist = false)
+    private Boolean isLiked;
+
+    @TableField(exist = false)
+    private String username;
 }

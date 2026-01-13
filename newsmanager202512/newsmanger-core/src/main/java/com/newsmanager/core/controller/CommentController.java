@@ -32,53 +32,12 @@ public class CommentController {
         return new CommentModel().selectList(qw);
     }
 
-    @GetMapping("/getbynidwithuser")
-    @Operation(summary = "根据新闻ID查询评论（包含用户名）")
-    public java.util.List<java.util.Map<String, Object>> getByNidWithUser(
+    @GetMapping("/getbynidwithtree")
+    @Operation(summary = "根据新闻ID查询评论树（嵌套结构）")
+    public List<CommentModel> getByNidWithTree(
             @RequestParam String nid,
             @RequestParam(required = false) Integer currentUid) {
-        com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<CommentModel> qw = new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<>();
-        qw.eq("nid", nid);
-        qw.orderByDesc("createdate");
-        List<CommentModel> comments = new CommentModel().selectList(qw);
-
-        java.util.List<java.util.Map<String, Object>> result = new java.util.ArrayList<>();
-        for (CommentModel comment : comments) {
-            Integer status = comment.getStatus();
-            Integer commentUid = comment.getUid();
-
-            // 过滤逻辑：status=1 所有人可见，status=0 仅评论者本人可见
-            if (status == null || status == 0) {
-                // 待审核评论，只有评论者本人可见
-                if (currentUid == null || !currentUid.equals(commentUid)) {
-                    continue; // 跳过，不显示给其他人
-                }
-            }
-
-            java.util.Map<String, Object> map = new java.util.HashMap<>();
-            map.put("cid", comment.getCid());
-            map.put("uid", commentUid);
-            map.put("content", comment.getContent());
-            map.put("createdate", comment.getCreatedate());
-            map.put("nid", comment.getNid());
-            map.put("status", status != null ? status : 0);
-
-            // 根据 uid 查询用户名
-            if (commentUid != null && commentUid > 0) {
-                com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<com.newsmanager.api.models.UserModel> uqw = new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<>();
-                uqw.eq("uid", commentUid);
-                com.newsmanager.api.models.UserModel user = new com.newsmanager.api.models.UserModel().selectOne(uqw);
-                if (user != null && user.getUsername() != null) {
-                    map.put("username", user.getUsername());
-                } else {
-                    map.put("username", "匿名用户");
-                }
-            } else {
-                map.put("username", "匿名用户");
-            }
-            result.add(map);
-        }
-        return result;
+        return commentService.getbynidwithtree(nid, currentUid);
     }
 
     @GetMapping("/getone")
@@ -94,8 +53,8 @@ public class CommentController {
     public void save(@ModelAttribute CommentModel commentModel) {
         // 让数据库自动生成 cid
         commentModel.setCid(null);
-        // 默认待审核状态
-        commentModel.setStatus(0);
+        // 为了测试和即时可见，暂时默认设置为已通过状态 (1)
+        commentModel.setStatus(1);
         commentService.save(commentModel);
     }
 
@@ -111,5 +70,17 @@ public class CommentController {
     @Operation(summary = "修改评论内容/状态")
     public void modify(CommentModel commentModel) {
         commentService.modify(commentModel);
+    }
+
+    @PostMapping("/like")
+    @Operation(summary = "点赞评论")
+    public void like(@RequestParam Integer cid, @RequestParam Integer uid) {
+        commentService.likeComment(cid, uid);
+    }
+
+    @PostMapping("/unlike")
+    @Operation(summary = "取消点赞")
+    public void unlike(@RequestParam Integer cid, @RequestParam Integer uid) {
+        commentService.unlikeComment(cid, uid);
     }
 }

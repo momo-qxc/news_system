@@ -11,7 +11,7 @@
  Target Server Version : 90400 (9.4.0)
  File Encoding         : 65001
 
- Date: 12/01/2026 12:29:53
+ Date: 13/01/2026 20:16:24
 */
 
 SET NAMES utf8mb4;
@@ -46,12 +46,14 @@ CREATE TABLE `tb_collection`  (
   `nid` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL,
   `createdate` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`colid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tb_collection
 -- ----------------------------
 INSERT INTO `tb_collection` VALUES (2, '19171977208', 'fb692c8f1cep', '2026/1/8 10:35:16');
+INSERT INTO `tb_collection` VALUES (4, '19171977208', '3f7d352c-9efc-4d19-ab4e-1f2cc20301e8', '2026/1/13 14:47:58');
+INSERT INTO `tb_collection` VALUES (5, '17788483327', '28706e53iiqn', '2026/1/13 15:21:21');
 
 -- ----------------------------
 -- Table structure for tb_comment
@@ -65,7 +67,7 @@ CREATE TABLE `tb_comment`  (
   `nid` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL,
   `status` int NULL DEFAULT NULL,
   PRIMARY KEY (`cid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tb_comment
@@ -74,21 +76,43 @@ INSERT INTO `tb_comment` VALUES (2, 0, '一般', '2026/1/7 12:51:49', '23cdd569n
 INSERT INTO `tb_comment` VALUES (3, 0, '46', '2026/1/7 12:52:06', '23cdd569nvr6', 1);
 INSERT INTO `tb_comment` VALUES (4, 1, '未来可期', '2026/1/7 13:08:02', '23cdd569nvr6', 1);
 INSERT INTO `tb_comment` VALUES (5, 1, 'hao', '2026/1/8 10:35:30', '066473d29hyw', 1);
+INSERT INTO `tb_comment` VALUES (6, 0, '不会吧？', '2026/1/12 13:03:07', '72b569ad5162', 1);
+INSERT INTO `tb_comment` VALUES (8, 0, '打倒资本家', '2026/1/13 09:14:37', '3f7d352c-9efc-4d19-ab4e-1f2cc20301e8', 0);
+INSERT INTO `tb_comment` VALUES (10, 5, '尊都假嘟', '2026/1/13 15:34:00', 'fb692c8f1cep', 1);
+INSERT INTO `tb_comment` VALUES (11, 0, '尊嘟假嘟', '2026/1/13 18:58:26', '3f7d352c-9efc-4d19-ab4e-1f2cc20301e8', 1);
 
 -- ----------------------------
--- Table structure for tb_histroy
+-- Table structure for tb_history
 -- ----------------------------
-DROP TABLE IF EXISTS `tb_histroy`;
-CREATE TABLE `tb_histroy`  (
+DROP TABLE IF EXISTS `tb_history`;
+CREATE TABLE `tb_history`  (
   `hid` int NOT NULL AUTO_INCREMENT,
   `uid` int NULL DEFAULT NULL,
-  `nid` int NULL DEFAULT NULL,
+  `nid` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL,
+  `createdate` varchar(30) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '浏览时间',
   PRIMARY KEY (`hid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 21 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
--- Records of tb_histroy
+-- Records of tb_history
 -- ----------------------------
+INSERT INTO `tb_history` VALUES (4, 1, '066473d29hyw', '2026/1/13 15:12:26');
+INSERT INTO `tb_history` VALUES (5, 4, '28706e53iiqn', '2026/1/13 15:21:19');
+INSERT INTO `tb_history` VALUES (6, 4, '28706e53iiqn', '2026/1/13 15:21:36');
+INSERT INTO `tb_history` VALUES (7, 1, '28706e53iiqn', '2026/1/13 15:21:58');
+INSERT INTO `tb_history` VALUES (8, 5, 'fb692c8f1cep', '2026/1/13 15:33:40');
+INSERT INTO `tb_history` VALUES (9, 1, 'fb692c8f1cep', '2026/1/13 15:34:26');
+INSERT INTO `tb_history` VALUES (10, 1, 'fb692c8f1cep', '2026/1/13 15:34:37');
+INSERT INTO `tb_history` VALUES (11, 1, '3f7d352c-9efc-4d19-ab4e-1f2cc20301e8', '2026/1/13 18:36:51');
+INSERT INTO `tb_history` VALUES (12, 1, '3f7d352c-9efc-4d19-ab4e-1f2cc20301e8', '2026/1/13 18:57:49');
+INSERT INTO `tb_history` VALUES (13, 1, '066473d29hyw', '2026/1/13 19:08:19');
+INSERT INTO `tb_history` VALUES (14, 1, '3f7d352c-9efc-4d19-ab4e-1f2cc20301e8', '2026/1/13 19:11:52');
+INSERT INTO `tb_history` VALUES (15, 1, '72b569ad5162', '2026/1/13 19:11:54');
+INSERT INTO `tb_history` VALUES (16, 1, '23cdd569nvr6', '2026/1/13 19:11:56');
+INSERT INTO `tb_history` VALUES (17, 1, 'f78787bfstlv', '2026/1/13 19:12:02');
+INSERT INTO `tb_history` VALUES (18, 1, '793f7de6qkce', '2026/1/13 19:12:05');
+INSERT INTO `tb_history` VALUES (19, 1, '13253139gstz', '2026/1/13 19:12:07');
+INSERT INTO `tb_history` VALUES (20, 1, '23cdd569nvr6', '2026/1/13 19:12:11');
 
 -- ----------------------------
 -- Table structure for tb_like
@@ -101,12 +125,14 @@ CREATE TABLE `tb_like`  (
   `createdate` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
   PRIMARY KEY (`lid`) USING BTREE,
   UNIQUE INDEX `unique_like`(`phone` ASC, `nid` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tb_like
 -- ----------------------------
-INSERT INTO `tb_like` VALUES (6, '19171977208', '066473d29hyw', '2026-01-09 13:07:18');
+INSERT INTO `tb_like` VALUES (1, '19171977208', '72b569ad5162', '2026-01-13 15:03:31');
+INSERT INTO `tb_like` VALUES (3, '17788483327', '28706e53iiqn', '2026-01-13 15:21:20');
+INSERT INTO `tb_like` VALUES (4, '19171977208', '3f7d352c-9efc-4d19-ab4e-1f2cc20301e8', '2026-01-13 18:57:53');
 
 -- ----------------------------
 -- Table structure for tb_news
@@ -136,11 +162,12 @@ INSERT INTO `tb_news` VALUES ('2389388e9jl0', '【文化中国行】话剧《父
 INSERT INTO `tb_news` VALUES ('23cdd569nvr6', '环球音乐集团与英伟达签署新的 AI 合作协议', '环球音乐集团与英伟达签署新的 AI 合作协议 动点科技环球音乐与英伟达签署全新人工智能合作协议 SOHU英伟达与环球音乐合作，打造人工智能驱动的音乐发现和粉丝互动平台 Cryptopolitan环球音乐携手英伟达，AI重塑音乐发现与创作方式！ SOHU环球音乐与英伟达签署全新人工智能合作协议-AI云资讯 icloudnews.net', '2026-01-07 03:10:00', '动点科技', 0, 1, 4);
 INSERT INTO `tb_news` VALUES ('265642a51ip7', '短道速滑奥运冠军武大靖官宣退役：转身不是落幕', '短道速滑奥运冠军武大靖官宣退役：转身不是落幕 中国网武大靖：冰刃未凉，热爱永续 新华网31岁奥运冠军武大靖官宣退役 新浪财经武大靖宣布退役：没有退役仪式 观察人物 | 安静转身，冬奥会冠军武大靖的冰面告别 SOHU', '2026-01-06 23:58:00', '中国网', 0, 1, 5);
 INSERT INTO `tb_news` VALUES ('28113fcc6on4', '黄仁勋新年首场演讲：AI超级芯片平台Rubin全面投产，开源自动驾驶推理模型', '黄仁勋新年首场演讲：AI超级芯片平台Rubin全面投产，开源自动驾驶推理模型 thepaper.cn马斯克：英伟达Alpamayo 5 - 6年后或成特斯拉FSD竞争对手 凤凰网黄仁勋称“今年将非常好”：将持续投资上下游和合作伙伴，要为中国市场做贡献要加入竞争 thepaper.cn国际消费电子展 英伟达AMD推AI新硬件摘要 新浪新闻_手机新浪网英伟达CES发了堆“怪物” 但跟你的电脑机箱已经毫无关系 驱动之家', '2026-01-05 23:38:00', '澎湃新闻', 0, 1, 3);
-INSERT INTO `tb_news` VALUES ('28706e53iiqn', '韩国总统李在明在上海出席中韩创新创业论坛', '韩国总统李在明在上海出席中韩创新创业论坛 新华网', '2026-01-07 02:31:16', '新华网', 0, 1, 1);
+INSERT INTO `tb_news` VALUES ('28706e53iiqn', '韩国总统李在明在上海出席中韩创新创业论坛', '韩国总统李在明在上海出席中韩创新创业论坛 新华网', '2026-01-07 02:31:16', '新华网', 1, 1, 1);
 INSERT INTO `tb_news` VALUES ('2c7e19f6yxb7', '羽毛球——马来西亚公开赛：石宇奇晋级', '羽毛球——马来西亚公开赛：石宇奇晋级 新华网惨遭一轮游！中国队输球引发网友不满，头号组合被日本队逆转 凤凰网马来西亚公开赛首日国羽7胜2负 陈雨菲逆转“梁王”出局 新浪财经马来西亚羽毛球公开赛：郭新娃/陈芳卉晋级混双次轮 光明网羽毛球丨马来西亚公开赛：韩悦晋级 SOHU', '2026-01-07 01:33:09', '新华网', 0, 1, 5);
 INSERT INTO `tb_news` VALUES ('3583887csi03', '2026年中国将推出数据领域国家标准 智能体等前沿方向标准加速布局', '2026年中国将推出数据领域国家标准 智能体等前沿方向标准加速布局 中华网2026年我国将在数据领域发布不少于30项重点标准 新华网从“有数据”到“有生产力”：2026数据要素价值如何兑现 thepaper.cn2026年我国将推出30余项数据领域国家标准 新浪财经2026前瞻｜迈入“价值释放年” 持续点亮数据要素价值 SOHU', '2026-01-06 23:32:05', '中华网', 0, 1, 3);
-INSERT INTO `tb_news` VALUES ('3f7d352c-9efc-4d19-ab4e-1f2cc20301e8', '黄仁勋挖角谷歌资深高管，英伟达任命首位 CMO', '北京时间 1 月 9 日，据《华尔街日报》报道，AI 芯片巨头英伟达已聘请谷歌营销高管艾莉森・瓦贡菲尔德（Alison Wagonfeld）担任其首席营销官（CMO）。\n知情人士称，瓦贡菲尔德将成为英伟达的首位 CMO，她将承担此前由多名员工负责的职责，并向 CEO 黄仁勋（Jensen Huang）汇报工作。瓦贡菲尔德将在今年 2 月上任，届时英伟达营销和传播团队的所有成员都将向她汇报工作。\n\n瓦贡菲尔德周四在领英上宣布，她将离开工作近十年的谷歌，跳槽英伟达。在谷歌，她负责谷歌云计算业务的营销工作。\n\n英伟达在过去三年中快速发展，这得益于该公司在先进 AI 工具和服务领域的核心计算机芯片供应商地位。自 2022 年 OpenAI 发布其 ChatGPT 聊天机器人以来，AI 工具和服务迅速兴起。\n\n这一无与伦比的增长使得英伟达的市场营销需求愈发迫切，也让黄仁勋成为 AI 热潮中最具代表性的公众人物之一。\n\n周一，黄仁勋在 CES 2026 上比往年更早地介绍了公司下一代 AI 服务器系统。他表示，巨大的市场需求正在推动整个行业加快开发进度。他对观众说：“AI 竞赛已经开始，每个人都在努力迈向下一个前沿。”\n\n英伟达最新一季度财报显示，公司实现了创纪录的 570 亿美元销售额，同比增长 62%，超出分析师预期。', '2026-01-09 08:23:23', '凤凰科技', 0, 1, 3);
+INSERT INTO `tb_news` VALUES ('3f7d352c-9efc-4d19-ab4e-1f2cc20301e8', '黄仁勋挖角谷歌资深高管，英伟达任命首位 CMO', '北京时间 1 月 9 日，据《华尔街日报》报道，AI 芯片巨头英伟达已聘请谷歌营销高管艾莉森・瓦贡菲尔德（Alison Wagonfeld）担任其首席营销官（CMO）。\n知情人士称，瓦贡菲尔德将成为英伟达的首位 CMO，她将承担此前由多名员工负责的职责，并向 CEO 黄仁勋（Jensen Huang）汇报工作。瓦贡菲尔德将在今年 2 月上任，届时英伟达营销和传播团队的所有成员都将向她汇报工作。\n\n瓦贡菲尔德周四在领英上宣布，她将离开工作近十年的谷歌，跳槽英伟达。在谷歌，她负责谷歌云计算业务的营销工作。\n\n英伟达在过去三年中快速发展，这得益于该公司在先进 AI 工具和服务领域的核心计算机芯片供应商地位。自 2022 年 OpenAI 发布其 ChatGPT 聊天机器人以来，AI 工具和服务迅速兴起。\n\n这一无与伦比的增长使得英伟达的市场营销需求愈发迫切，也让黄仁勋成为 AI 热潮中最具代表性的公众人物之一。\n\n周一，黄仁勋在 CES 2026 上比往年更早地介绍了公司下一代 AI 服务器系统。他表示，巨大的市场需求正在推动整个行业加快开发进度。他对观众说：“AI 竞赛已经开始，每个人都在努力迈向下一个前沿。”\n\n英伟达最新一季度财报显示，公司实现了创纪录的 570 亿美元销售额，同比增长 62%，超出分析师预期。', '2026-01-09 08:23:23', '凤凰科技', 2, 1, 3);
 INSERT INTO `tb_news` VALUES ('459b47b7mhy8', '新疆塔什库尔干塔吉克自治县发生5.2级地震 暂未接到人员伤亡报告', '新疆塔什库尔干塔吉克自治县发生5.2级地震 暂未接到人员伤亡报告 新华网', '2026-01-06 23:44:35', '新华网', 0, 1, 1);
+INSERT INTO `tb_news` VALUES ('4af2c9c17040', '美联储风波叠加地缘政治不确定性 黄金白银期价再创新高', '美联储风波叠加地缘政治不确定性 黄金白银期价再创新高 中国网在Google 新闻上查看完整报道', '2026-01-13 16:18:00', '中国网', 0, 1, 3);
 INSERT INTO `tb_news` VALUES ('5fec049dagyv', '一城千面拍遍古今 荆州入选文旅短剧活力城市', '一城千面拍遍古今 荆州入选文旅短剧活力城市 湖北文明网预计贡献两百多万就业岗位 微短剧产业呈爆发式增长 新浪财经微短剧这一年②|流量变“留量” 赋能地域文化传播 “微短剧+文旅”打开内容升维新局面 thepaper.cn“我被《盛夏芬德拉》打蒙了！”2026年新年晚会短剧演员刷屏，短剧播放量创新高，头部演员成本增长两三倍，档期排队3个月起 每日经济新闻2025，短剧的“成年礼” 36kr.com', '2026-01-07 01:20:16', '湖北文明网', 0, 1, 4);
 INSERT INTO `tb_news` VALUES ('6529f7986mq7', '网球——香港公开赛：商竣程晋级', '网球——香港公开赛：商竣程晋级 新华网【赛场】新年首胜！吴易昺完胜No.54玛洛桑，晋级香港赛次轮再战卢布列夫 新浪财经吴易昺出战香港网球公开赛 期待新赛季“开门红” 上海热线中国男网开门红！商竣程、吴易昺双双晋级ATP香港站次轮 SOHU黄泽林晋级ATP250香港公开赛第二轮 chinanews.com.cn', '2026-01-07 01:33:07', '新华网', 0, 1, 5);
 INSERT INTO `tb_news` VALUES ('6854cb5fqzd0', '广东影视政策落地观察｜创新激活市场，第一票仓的担当', '广东影视政策落地观察｜创新激活市场，第一票仓的担当 南方网', '2026-01-07 01:38:00', '南方网', 0, 1, 4);
@@ -149,7 +176,7 @@ INSERT INTO `tb_news` VALUES ('68e239f6uslo', '冰雪旅游让世界看见冬季
 INSERT INTO `tb_news` VALUES ('6edcd4c2tbtv', '特朗普：委内瑞拉将向美国移交数千万桶石油', '特朗普：委内瑞拉将向美国移交数千万桶石油 凤凰网特朗普据悉拟会晤石油高管 力促委内瑞拉产量复苏 新浪财经美政府欲迅速“变现”委石油资源 美石油巨头持谨慎态度 中国网特朗普称委内瑞拉将向美国移交3000万至5000万桶石油 thepaper.cn石油巨头集体观望，美国政府的委内瑞拉石油蓝图将落空？ 凤凰网', '2026-01-07 00:25:27', '凤凰网', 0, 1, 2);
 INSERT INTO `tb_news` VALUES ('714a96c3rs18', '委临时总统：委内瑞拉没有“外国代理人”', '委临时总统：委内瑞拉没有“外国代理人” 新华网就任委内瑞拉代总统后的罗德里格斯，只是个开始！ 新浪新闻_手机新浪网委内瑞拉代总统：委未受外部势力统治 中国网新闻中心CIA被曝早已作出机密评估：若马杜罗失去权力，原政权高层最适合领导委内瑞拉 观察释新闻｜委内瑞拉临时总统如何为政权“极限求生”？ thepaper.cn', '2026-01-07 00:01:45', '新华网', 0, 1, 2);
 INSERT INTO `tb_news` VALUES ('71b39fcadqcp', '委内瑞拉要求美国法官承认无权审理马杜罗案', '委内瑞拉要求美国法官承认无权审理马杜罗案 新浪财经专家：美对委袭击是“头疼医脚”“内病外治” 光明网委内瑞拉遇到的不是“靖康之变”，而是“土木堡” 新浪财经国际观察丨“庭审”马杜罗实为“美式强权秀” 中国日报网子思：如果“马杜罗事件”是个转折点，世界将走向何方？ 观察', '2026-01-06 16:59:32', '新浪财经', 0, 1, 2);
-INSERT INTO `tb_news` VALUES ('72b569ad5162', '骄阳似我女主第一人选赵今麦 顾漫严选实至名归', '骄阳似我女主第一人选赵今麦 顾漫严选实至名归 中华网', '2026-01-07 03:19:37', '中华网', 0, 1, 4);
+INSERT INTO `tb_news` VALUES ('72b569ad5162', '骄阳似我女主第一人选赵今麦 顾漫严选实至名归', '骄阳似我女主第一人选赵今麦 顾漫严选实至名归 中华网', '2026-01-07 03:19:37', '中华网', 2, 1, 4);
 INSERT INTO `tb_news` VALUES ('75e5fe0crrki', '梅派经典《穆桂英挂帅》即将亮相合肥', '梅派经典《穆桂英挂帅》即将亮相合肥 安徽新闻联播', '2026-01-06 23:18:00', '安徽新闻联播', 0, 1, 4);
 INSERT INTO `tb_news` VALUES ('793f7de6qkce', '大美中国 气象万千丨朝霞染京华 破晓即惊艳', '大美中国 气象万千丨朝霞染京华 破晓即惊艳 cma.gov.cn北京朝霞，浪漫满分！ 新浪财经北京天空上演绚丽粉色与金色交织的朝霞 SOHU美丽北京｜朝霞染京城 白塔映焰霞 SOHU北京绝美朝霞，来了！ 央广网', '2026-01-07 02:26:18', '中国气象局', 0, 1, 1);
 INSERT INTO `tb_news` VALUES ('7b16f4d44c0z', '第十二届全国大众冰雪季在长春启动', '第十二届全国大众冰雪季在长春启动 新华网冰雕雪塑扮靓冬日“北国春城” 新华网第十二届全国大众冰雪季将在长春开幕 赛事活动推动冰雪运动走向大众 新浪财经吉林 让资源优势成为产业胜势 激活冰雪产业发展新动能 人民网四川省第八届全民健身冰雪季启幕- 中国日报网 China Daily', '2026-01-06 15:40:03', '新华网', 0, 1, 1);
@@ -195,8 +222,8 @@ CREATE TABLE `tb_notice`  (
 -- ----------------------------
 -- Records of tb_notice
 -- ----------------------------
-INSERT INTO `tb_notice` VALUES ('20260112101438174', '因服务器扩容及数据库结构优化需求，本平台将于 2026 年 1 月 14 日（周日）02:00 - 04:00 进行停机维护。', '2026年1月12日 上午10:14:38', 2, 1, 1);
-INSERT INTO `tb_notice` VALUES ('20260112111248207', '重要通知', '2026年1月12日 上午11:12:48', 1, 0, 2);
+INSERT INTO `tb_notice` VALUES ('20260112101438174', '因服务器扩容及数据库结构优化需求，本平台将于 2026 年 1 月 14 日 02:00 - 04:00 进行停机维护。', '2026年1月12日 上午10:14:38', 2, 0, 1);
+INSERT INTO `tb_notice` VALUES ('20260112111248207', '重要通知：所有用户请于本周内完成实名认证，并缴纳100$的注册费', '2026年1月12日 上午11:12:48', 1, 1, 2);
 
 -- ----------------------------
 -- Table structure for tb_theme
@@ -229,12 +256,14 @@ CREATE TABLE `tb_user`  (
   `age` int NULL DEFAULT NULL,
   `pic` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`uid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tb_user
 -- ----------------------------
 INSERT INTO `tb_user` VALUES (1, 'momo', '19171977208', 1, 18, '');
+INSERT INTO `tb_user` VALUES (3, 'cc', '19171978848', 0, 20, '');
+INSERT INTO `tb_user` VALUES (5, 'doubao', '17788487748', 1, 28, NULL);
 
 -- ----------------------------
 -- View structure for v_theme_news

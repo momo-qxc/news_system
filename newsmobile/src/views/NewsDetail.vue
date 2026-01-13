@@ -86,25 +86,59 @@
         <div v-if="comments.length === 0" class="no-comment">
           <van-empty image="search" description="暂无评论，快来抢沙发吧~" />
         </div>
+        
+        <!-- 顶级评论循环 -->
         <div 
           v-for="comment in comments" 
           :key="comment.cid" 
           class="comment-item"
         >
-          <div class="comment-header">
-            <span class="comment-user">{{ comment.username || '匿名用户' }}</span>
-            <span v-if="comment.status === 0" class="pending-tag">待审核</span>
+          <div class="comment-main">
+            <div class="comment-header">
+              <span class="comment-user">{{ comment.username || '匿名用户' }}</span>
+              <span v-if="comment.status === 0" class="pending-tag">待审核</span>
+            </div>
+            <div class="comment-text">{{ comment.content }}</div>
+            <div class="comment-footer">
+              <div class="footer-left">
+                <span class="comment-time">{{ comment.createdate }}</span>
+                <span 
+                  v-if="comment.uid === currentUid" 
+                  class="comment-delete"
+                  @click.stop="deleteComment(comment.cid)"
+                >
+                  删除
+                </span>
+              </div>
+              <div class="footer-right">
+                <div class="interaction-item" @click.stop="toggleCommentLike(comment)">
+                  <van-icon :name="comment.isLiked ? 'like' : 'like-o'" :color="comment.isLiked ? '#e60012' : '#969799'" />
+                  <span>{{ comment.likeCount || 0 }}</span>
+                </div>
+                <div class="interaction-item" @click.stop="prepareReply(comment)">
+                  <van-icon name="comment-o" />
+                  <span>回复</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="comment-text">{{ comment.content }}</div>
-          <div class="comment-footer">
-            <span class="comment-time">{{ comment.createdate }}</span>
-            <span 
-              v-if="comment.uid === currentUid" 
-              class="comment-delete"
-              @click="deleteComment(comment.cid)"
-            >
-              删除
-            </span>
+
+          <!-- 子回复列表 (嵌套显示) -->
+          <div v-if="comment.replyList && comment.replyList.length > 0" class="reply-list">
+            <div v-for="reply in comment.replyList" :key="reply.cid" class="reply-item">
+              <div class="reply-header">
+                <span class="reply-user">{{ reply.username || '匿名用户' }}</span>
+                <span v-if="reply.status === 0" class="pending-tag">待审核</span>
+              </div>
+              <div class="reply-text">{{ reply.content }}</div>
+              <div class="reply-footer">
+                <span class="comment-time">{{ reply.createdate }}</span>
+                <div class="interaction-item" @click.stop="toggleCommentLike(reply)">
+                  <van-icon :name="reply.isLiked ? 'like' : 'like-o'" :color="reply.isLiked ? '#e60012' : '#969799'" />
+                  <span>{{ reply.likeCount || 0 }}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -131,6 +165,7 @@ export default {
       currentUid: null,
       commentContent: '',
       isAnonymous: false,
+      replyTo: null, // 正在回复的评论对象
       comments: []
     }
   },
@@ -328,14 +363,49 @@ export default {
         params.append('content', this.commentContent)
         params.append('createdate', new Date().toLocaleString())
         params.append('anonymous', this.isAnonymous)
+        if (this.replyTo) {
+          params.append('pid', this.replyTo.cid)
+        }
+        
         await axios.post(`${API_BASE_URL}/news/comment/save`, params)
-        this.$toast.success('评论成功')
+        this.$toast.success(this.replyTo ? '回复成功' : '评论成功')
+        
         this.commentContent = ''
         this.isAnonymous = false
+        this.replyTo = null
         this.loadComments()
       } catch (e) {
         console.error('Submit comment error:', e)
-        this.$toast.fail('评论失败')
+        this.$toast.fail('操作失败')
+      }
+    },
+
+    // 准备回复某人
+    prepareReply(comment) {
+      if (!this.phone) {
+        this.$toast('请先登录')
+        return
+      }
+      this.replyTo = comment
+      this.commentContent = `@${comment.username || '匿名用户'} `
+      this.scrollToComment()
+    },
+
+    // 切换评论点赞状态
+    async toggleCommentLike(comment) {
+      if (!this.phone) {
+        this.$toast('请先登录')
+        return
+      }
+      try {
+        const url = comment.isLiked ? '/news/comment/unlike' : '/news/comment/like'
+        await axios.post(`${API_BASE_URL}${url}?cid=${comment.cid}&phone=${this.phone}`)
+        
+        // 本地状态更新，提升 UX
+        comment.isLiked = !comment.isLiked
+        comment.likeCount = (comment.likeCount || 0) + (comment.isLiked ? 1 : -1)
+      } catch (e) {
+        console.error('Toggle comment like error:', e)
       }
     },
 
@@ -527,6 +597,27 @@ export default {
   justify-content: space-between;
   align-items: center;
 }
+.footer-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.footer-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.interaction-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #969799;
+  cursor: pointer;
+}
+.interaction-item .van-icon {
+  font-size: 18px;
+}
 .comment-time {
   font-size: 12px;
   color: #969799;
@@ -535,6 +626,44 @@ export default {
   font-size: 12px;
   color: #ee0a24;
   cursor: pointer;
+}
+
+/* 子回复列表样式 */
+.reply-list {
+  margin-top: 12px;
+  padding: 12px;
+  background-color: #f7f8fa;
+  border-radius: 8px;
+}
+.reply-item {
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed #ebedf0;
+}
+.reply-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+.reply-header {
+  font-size: 13px;
+  font-weight: 500;
+  color: #323233;
+  margin-bottom: 4px;
+}
+.reply-user {
+  color: #1989fa;
+}
+.reply-text {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #323233;
+  margin-bottom: 6px;
+}
+.reply-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .no-comment {
   padding: 20px 0;
