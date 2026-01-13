@@ -38,7 +38,7 @@ const routes = [
 ]
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: 'hash',  // 5+App 需要使用 hash 模式
   base: process.env.BASE_URL,
   routes
 })

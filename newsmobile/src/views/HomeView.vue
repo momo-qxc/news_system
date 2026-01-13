@@ -71,10 +71,10 @@ export default {
       active: 0,
       themelist: [],
       images: [
-        require('@/assets/picture/“绝对决心行动”的执行影片.jpg'),
-        require('@/assets/picture/李在明访华.png'),
-        require('@/assets/picture/沙特轰炸也门.jpg'),
-        require('@/assets/picture/阿凡达3.jpg')
+        require('@/assets/picture/trump.jpg'),
+        require('@/assets/picture/lzm.png'),
+        require('@/assets/picture/war.jpg'),
+        require('@/assets/picture/afd.jpg')
       ],
       // 新闻列表相关
       newsList: [],
