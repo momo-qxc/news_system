@@ -6,144 +6,240 @@
 	<title>新闻详情 - 新闻中国</title>
 	<link href="css/main.css" rel="stylesheet" type="text/css" />
 	<style>
-		.news-container {
-			border: 2px solid blue;
-			padding: 30px;
+		:root {
+			--primary-color: #e60012;
+			--bg-color: #f7f8fa;
+			--card-bg: #fff;
+			--text-main: #323233;
+			--text-secondary: #969799;
+			--border-color: #ebedf0;
+		}
+
+		body {
+			background-color: var(--bg-color);
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+			margin: 0;
+			color: var(--text-main);
+		}
+
+		#container.news-container {
+			max-width: 960px;
+			margin: 20px auto;
+			background: var(--card-bg);
+			border: none;
+			border-radius: 12px;
+			box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+			padding: 40px;
 			min-height: 400px;
+			height: auto !important;
+			overflow: visible !important;
 		}
 
 		.news-title {
-			text-align: center;
-			font-size: 24px;
-			font-weight: bold;
-			color: #0066cc;
-			margin-bottom: 30px;
+			text-align: left;
+			font-size: 28px;
+			font-weight: 700;
+			color: var(--text-main);
+			margin-bottom: 24px;
+			line-height: 1.4;
 		}
 
 		.news-content {
 			line-height: 1.8;
-			font-size: 14px;
-			color: #333;
+			font-size: 16px;
+			color: #444;
 			text-indent: 2em;
-			margin-bottom: 30px;
+			margin-bottom: 40px;
 		}
 
 		.news-meta {
-			text-align: right;
-			color: #666;
-			font-size: 12px;
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-end;
+			padding-top: 20px;
+			border-top: 1px solid var(--border-color);
+			color: var(--text-secondary);
+			font-size: 14px;
+		}
+
+		.meta-info {
+			text-align: left;
 		}
 
 		.news-author {
-			margin-bottom: 5px;
+			font-weight: 600;
 			color: #0066cc;
+			margin-bottom: 6px;
 		}
 
 		.news-date {
-			color: #888;
+			color: var(--text-secondary);
 		}
 
-		/* 点赞和收藏图标 */
+		/* 操作图标 */
 		.action-icons {
-			text-align: right;
-			margin-top: 10px;
-			font-size: 20px;
+			display: flex;
+			gap: 20px;
+			align-items: center;
 		}
 
-		.icon-heart,
-		.icon-star {
+		.action-btn {
 			cursor: pointer;
-			margin-left: 10px;
-			transition: color 0.3s;
-		}
-
-		.icon-heart {
 			font-size: 24px;
-			color: transparent;
-			-webkit-text-stroke: 1px #888;
+			transition: all 0.2s;
+			user-select: none;
+			color: var(--text-secondary);
 		}
 
-		.icon-heart:hover {
-			-webkit-text-stroke: 1px #ff69b4;
+		.action-btn:hover {
+			transform: scale(1.1);
 		}
 
 		.icon-heart.liked {
-			color: #ff69b4;
-			-webkit-text-stroke: 1px #ff69b4;
-		}
-
-		.icon-star {
-			color: #333;
-		}
-
-		.icon-star:hover {
-			color: #ffd700;
+			color: var(--primary-color);
 		}
 
 		.icon-star.collected {
-			color: #ffd700;
+			color: #ffb400;
 		}
 
 		/* 评论区域 */
 		.comment-section {
-			margin-top: 30px;
-			border-top: 1px solid #ddd;
-			padding-top: 20px;
+			margin-top: 50px;
 		}
 
-		.comment-input-area {
-			display: flex;
-			align-items: flex-start;
+		.comment-section-title {
+			font-size: 20px;
+			font-weight: 600;
 			margin-bottom: 20px;
+			padding-left: 10px;
+			border-left: 4px solid var(--primary-color);
 		}
 
-		.comment-label {
-			width: 80px;
-			padding-top: 10px;
+		.comment-input-wrapper {
+			background: #fdfdfd;
+			border: 1px solid var(--border-color);
+			border-radius: 8px;
+			padding: 16px;
+			margin-bottom: 30px;
+			transition: border-color 0.3s;
+		}
+
+		.comment-input-wrapper:focus-within {
+			border-color: #0066cc;
 		}
 
 		.comment-textarea {
-			flex: 1;
-			height: 100px;
-			padding: 10px;
-			border: 1px solid #333;
+			width: 100%;
+			height: 80px;
+			border: none;
+			outline: none;
+			padding: 0;
+			font-size: 14px;
 			resize: none;
+			background: transparent;
+		}
+
+		.comment-input-footer {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-top: 12px;
+			padding-top: 12px;
+			border-top: 1px solid #f5f5f5;
 		}
 
 		.comment-submit {
-			margin-left: 10px;
-			padding: 10px 20px;
+			padding: 8px 24px;
 			background-color: #0066cc;
 			color: white;
 			border: none;
+			border-radius: 4px;
 			cursor: pointer;
+			font-weight: 500;
+			transition: background 0.3s;
 		}
 
 		.comment-submit:hover {
-			background-color: #0055aa;
+			background-color: #0050a3;
 		}
 
 		.comment-list {
 			margin-top: 20px;
 		}
 
+		/* 评论项优化 */
 		.comment-item {
-			padding: 10px 0;
-			border-bottom: 1px solid #eee;
+			padding: 20px 0;
+			border-bottom: 1px solid #f5f5f5;
+		}
+
+		.comment-item:last-child {
+			border-bottom: none;
 		}
 
 		.comment-user {
-			color: #0066cc;
-			font-weight: bold;
+			color: #333;
+			font-weight: 600;
+			font-size: 15px;
 		}
 
 		.comment-content {
-			margin: 5px 0;
+			margin: 10px 0;
+			font-size: 15px;
+			line-height: 1.6;
 		}
 
-		.comment-time {
-			color: #888;
-			font-size: 12px;
+		.reply-list {
+			margin-top: 15px;
+			padding: 15px;
+			background-color: #f9f9f9;
+			border-radius: 8px;
+		}
+
+		#top {
+			background: #fff;
+			border-bottom: 1px solid #ebedf0;
+			padding: 8px 20px;
+			font-size: 13px;
+		}
+
+		#top_login2 {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			max-width: 960px;
+			margin: 0 auto;
+		}
+
+		#nav {
+			max-width: 960px;
+			margin: 20px auto;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		#nav #logo img {
+			height: 50px;
+		}
+
+		#friend {
+			max-width: 960px;
+			margin: 40px auto;
+			padding: 20px;
+			background: #fff;
+			border-radius: 8px;
+		}
+
+		#footer {
+			text-align: center;
+			padding: 40px 0;
+			color: #969799;
+			font-size: 13px;
+			background: #fff;
+			margin-top: 40px;
+			border-top: 1px solid #ebedf0;
 		}
 	</style>
 </head>
@@ -151,25 +247,23 @@
 <body>
 	<div id="header">
 		<div id="top">
-			<div id="top_login">
+			<div id="top_login" style="max-width: 960px; margin: 0 auto; display: none;">
 				<label>手机号:</label><input type="text" name="phone" value="" maxlength="11" size="11" />
 				<button id="getcode">发送验证码</button>
 				<label>验证码:</label><input type="password" name="code" value="" class="login_input" />
 				<input type="button" class="login_sub" value="登录" />&nbsp;<a href="regist.html">立即注册</a>
-				<img src="images/friend_logo.gif" alt="Google" id="friend_logo" />
 			</div>
-			<div id="top_login2" style="display: inline-flex;width: 100%;">
-				<div style="width:45%;text-indent:5px;height:30px;line-height:30px;"> 欢迎: <span id="currentuser"
-						style="font-weight: bold;color: blue;"></span></div>
-				<div style="width:50%;text-align:right;height:30px;line-height:30px;">
-					<a href="index.html" style="cursor: pointer;">返回首页</a>
-					<a href="#" id="exit" style="cursor: pointer;margin-left:10px;">退出</a>
+			<div id="top_login2">
+				<div> 欢迎: <span id="currentuser" style="font-weight: 600; color: #0066cc;"></span></div>
+				<div>
+					<a href="index.html" style="text-decoration: none; color: #666;">返回首页</a>
+					<a href="#" id="exit" style="margin-left:15px; text-decoration: none; color: #666;">退出</a>
 				</div>
 			</div>
 		</div>
 		<div id="nav">
 			<div id="logo"> <img src="images/logo.jpg" alt="新闻中国" /> </div>
-			<div id="a_b01" style="margin-top: 25px;"> <img src="images/a_b01.gif" alt="" /> </div>
+			<div id="a_b01"> <img src="images/a_b01.gif" alt="" /> </div>
 		</div>
 	</div>
 	<div id="container" class="news-container">
@@ -178,23 +272,27 @@
 			<!-- 新闻内容将在这里显示 -->
 		</div>
 		<div class="news-meta">
-			<div class="news-author" id="newsAuthor"></div>
-			<div class="news-date" id="newsDate"></div>
+			<div class="meta-info">
+				<div class="news-author" id="newsAuthor"></div>
+				<div class="news-date" id="newsDate"></div>
+			</div>
 			<div class="action-icons">
-				<span class="icon-heart" id="likeBtn" title="点赞">&#9829;</span>
-				<span class="icon-star" id="collectBtn" title="收藏">&#9734;</span>
+				<span class="action-btn icon-heart" id="likeBtn" title="点赞">&#9829;</span>
+				<span class="action-btn icon-star" id="collectBtn" title="收藏">&#9734;</span>
 			</div>
 		</div>
 
 		<!-- 评论区域 -->
 		<div class="comment-section">
-			<div class="comment-input-area">
-				<span class="comment-label">我要评论:</span>
-				<textarea class="comment-textarea" id="commentInput" placeholder="请输入评论内容..."></textarea>
-				<button class="comment-submit" id="submitComment">提交</button>
-			</div>
-			<div style="margin-left: 80px; margin-bottom: 15px;">
-				<label><input type="checkbox" id="anonymousCheck"> 匿名评论</label>
+			<h3 class="comment-section-title">最新评论</h3>
+			<div class="comment-input-wrapper">
+				<textarea class="comment-textarea" id="commentInput" placeholder="写下你的评论..."></textarea>
+				<div class="comment-input-footer">
+					<label style="font-size: 14px; color: #666; cursor: pointer;">
+						<input type="checkbox" id="anonymousCheck" style="vertical-align: middle;"> 匿名评论
+					</label>
+					<button class="comment-submit" id="submitComment">发表评论</button>
+				</div>
 			</div>
 			<div class="comment-list" id="commentList">
 				<!-- 评论列表将在这里显示 -->

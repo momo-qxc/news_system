@@ -343,20 +343,10 @@ let newsinfoobj = {
 
             if (list && list.length > 0) {
                 for (let i = 0; i < list.length; i++) {
-                    let comment = list[i];
-                    html += newsinfoobj.renderCommentItem(comment, false);
-
-                    // 渲染子回复
-                    if (comment.replyList && comment.replyList.length > 0) {
-                        html += '<div class="reply-list" style="margin-left: 50px; background: #f9f9f9; padding: 10px; border-radius: 4px; margin-top: 10px;">';
-                        for (let j = 0; j < comment.replyList.length; j++) {
-                            html += newsinfoobj.renderCommentItem(comment.replyList[j], true);
-                        }
-                        html += '</div>';
-                    }
+                    html += newsinfoobj.renderCommentItem(list[i], false);
                 }
             } else {
-                html = '<div style="color:#888; text-align:center; padding:20px;">暂无评论</div>';
+                html = '<div style="color:#969799; text-align:center; padding:40px; font-size:14px;">暂无评论，快来发表第一篇评论吧 ~</div>';
             }
 
             $("#commentList").html(html);
@@ -365,20 +355,20 @@ let newsinfoobj = {
         });
     },
 
-    // 渲染单条评论 HTML
+    // 渲染单条评论 HTML（支持无限级递归）
     renderCommentItem: function (comment, isReply) {
-        let statusTag = (comment.status === 0) ? ' <span style="color:#f90; font-size:11px;">(待审核)</span>' : '';
-        let heartColor = comment.isLiked ? "#e60012" : "#969799";
+        let statusTag = (comment.status === 0) ? ' <span style="color:#f90; font-weight:normal; font-size:12px;">(待审核)</span>' : '';
+        let heartColor = comment.isLiked ? "#e60012" : "#a8abb2";
         let likeCount = comment.likeCount || 0;
 
-        let html = '<div class="comment-item" style="padding: 10px 0; border-bottom: 1px dashed #eee;">';
+        let html = '<div class="comment-item">';
         html += '  <div style="display: flex; justify-content: space-between; align-items: flex-start;">';
-        html += '    <span class="comment-user" style="font-weight:bold; color:#0066cc;">' + (comment.username || "匿名用户") + statusTag + '</span>';
+        html += '    <span class="comment-user">' + (comment.username || "匿名用户") + statusTag + '</span>';
 
-        // 操作区：点赞、回复
-        html += '    <div style="display: flex; align-items: center; gap: 15px;">';
-        html += '      <span style="cursor:pointer; font-size: 13px; color: #666;" onclick="newsinfoobj.toggleCommentLike(' + comment.cid + ', ' + comment.isLiked + ', $(this).find(\'.heart-icon\'), $(this).find(\'.like-count\'))">';
-        html += '        <span class="heart-icon" style="color:' + heartColor + '; font-size: 16px;">❤</span>';
+        // 操作区
+        html += '    <div style="display: flex; align-items: center; gap: 16px;">';
+        html += '      <span style="cursor:pointer; display:flex; align-items:center; gap:4px; font-size: 13px; color: #606266;" onclick="newsinfoobj.toggleCommentLike(' + comment.cid + ', ' + comment.isLiked + ', $(this).find(\'.heart-icon\'), $(this).find(\'.like-count\'))">';
+        html += '        <span class="heart-icon" style="color:' + heartColor + '; font-size: 18px;">❤</span>';
         html += '        <span class="like-count">' + likeCount + '</span>';
         html += '      </span>';
         if (!isReply) {
@@ -387,16 +377,25 @@ let newsinfoobj = {
         html += '    </div>';
         html += '  </div>';
 
-        html += '  <div class="comment-content" style="margin: 8px 0; font-size: 14px;">' + comment.content + '</div>';
-        html += '  <div style="display: flex; justify-content: space-between; align-items: center;">';
-        html += '    <span class="comment-time" style="color:#999; font-size:12px;">' + (comment.createdate || "") + '</span>';
+        html += '  <div class="comment-content">' + comment.content + '</div>';
+        html += '  <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">';
+        html += '    <span style="color:#999; font-size:12px;">' + (comment.createdate || "") + '</span>';
 
         // 删除按钮
         if (comment.uid && comment.uid === newsinfoobj.currentUid) {
-            html += '    <span class="comment-delete" onclick="newsinfoobj.deleteComment(' + comment.cid + ')" style="color:#e74c3c; font-size:12px; cursor:pointer;">删除</span>';
+            html += '    <span class="comment-delete" onclick="newsinfoobj.deleteComment(' + comment.cid + ')" style="color:#f56c6c; font-size:12px; cursor:pointer;">删除</span>';
+        }
+        html += '  </div>';
+
+        // 处理递归子评论
+        if (comment.replyList && comment.replyList.length > 0) {
+            html += '<div class="reply-list">';
+            for (let j = 0; j < comment.replyList.length; j++) {
+                html += newsinfoobj.renderCommentItem(comment.replyList[j], true);
+            }
+            html += '</div>';
         }
 
-        html += '  </div>';
         html += '</div>';
         return html;
     },
