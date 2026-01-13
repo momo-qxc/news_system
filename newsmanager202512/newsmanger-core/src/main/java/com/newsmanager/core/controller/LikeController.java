@@ -79,4 +79,31 @@ public class LikeController {
         result.put("cnt", news != null ? (news.getCnt() != null ? news.getCnt() : 0) : 0);
         return result;
     }
+
+    @GetMapping("/getbyphone")
+    @Operation(summary = "获取用户所有点赞记录")
+    public List<Map<String, Object>> getByPhone(@RequestParam String phone) {
+        QueryWrapper<LikeModel> qw = new QueryWrapper<>();
+        qw.eq("phone", phone);
+        qw.orderByDesc("createdate");
+        List<LikeModel> likes = new LikeModel().selectList(qw);
+
+        List<Map<String, Object>> result = new java.util.ArrayList<>();
+        for (LikeModel like : likes) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("lid", like.getLid());
+            item.put("nid", like.getNid());
+            item.put("createdate", like.getCreatedate());
+
+            // 获取新闻标题
+            NewsModel news = new NewsModel().selectById(like.getNid());
+            if (news != null) {
+                item.put("ntitle", news.getNtitle());
+            } else {
+                item.put("ntitle", "新闻已删除");
+            }
+            result.add(item);
+        }
+        return result;
+    }
 }

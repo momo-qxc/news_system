@@ -37,4 +37,12 @@ public class LikeController {
                 SERVICE_PATH1 + "/news/like/count?nid=" + nid,
                 String.class);
     }
+
+    @GetMapping("/getbyphone")
+    @Operation(description = "获取用户所有点赞记录")
+    public String getByPhone(@RequestParam String phone) {
+        return restTemplate.getForObject(
+                SERVICE_PATH1 + "/news/like/getbyphone?phone=" + phone,
+                String.class);
+    }
 }
