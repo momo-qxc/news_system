@@ -26,6 +26,17 @@ public class CommentService {
         // 1. 获取该新闻下所有评论
         QueryWrapper<CommentModel> qw = new QueryWrapper<>();
         qw.eq("nid", nid);
+
+        // 核心可见性逻辑：
+        // 1. status = 1 (审核通过) 的对所有人可见
+        // 2. status = 0 (待审核) 仅对作者自己可见 (uid = currentUid)
+        qw.and(wrapper -> {
+            wrapper.eq("status", 1);
+            if (currentUid != null) {
+                wrapper.or().eq("uid", currentUid);
+            }
+        });
+
         qw.orderByDesc("createdate");
         List<CommentModel> allComments = commentMapper.selectList(qw);
 

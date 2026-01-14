@@ -298,6 +298,19 @@ let newsinfoobj = {
         $("#submitComment").text("回复");
     },
 
+    // 递归铺平所有子回复
+    flattenReplies: function (comment, targetList) {
+        if (comment.replyList && comment.replyList.length > 0) {
+            for (let i = 0; i < comment.replyList.length; i++) {
+                let reply = comment.replyList[i];
+                // 标记回复对象（父级可能是根评论，也可能是其他回复）
+                reply.replyToUsername = comment.username || "匿名用户";
+                targetList.push(reply);
+                newsinfoobj.flattenReplies(reply, targetList);
+            }
+        }
+    },
+
     // 切换评论点赞状态
     toggleCommentLike: function (cid, isLiked, $icon, $count) {
         let phone = sessionStorage.getItem("cuser");
@@ -317,7 +330,7 @@ let newsinfoobj = {
             if (newIsLiked) {
                 $icon.css("color", "#e60012");
             } else {
-                $icon.css("color", "#969799");
+                $icon.css("color", "#a8abb2");
             }
             // 更新 onclick 属性以反映新状态
             $icon.parent().attr("onclick", "newsinfoobj.toggleCommentLike(" + cid + ", " + newIsLiked + ", $(this).find('span.heart-icon'), $(this).find('span.like-count'))");
@@ -343,7 +356,23 @@ let newsinfoobj = {
 
             if (list && list.length > 0) {
                 for (let i = 0; i < list.length; i++) {
-                    html += newsinfoobj.renderCommentItem(list[i], false);
+                    let rootComment = list[i];
+                    html += '<div class="comment-thread">';
+                    // 渲染根评论
+                    html += newsinfoobj.renderCommentItem(rootComment, false);
+
+                    // 铺平所有子回复（抖音风格：都在一层显示）
+                    let flatReplies = [];
+                    newsinfoobj.flattenReplies(rootComment, flatReplies);
+
+                    if (flatReplies.length > 0) {
+                        html += '<div class="reply-list">';
+                        for (let reply of flatReplies) {
+                            html += newsinfoobj.renderCommentItem(reply, true);
+                        }
+                        html += '</div>';
+                    }
+                    html += '</div>';
                 }
             } else {
                 html = '<div style="color:#969799; text-align:center; padding:40px; font-size:14px;">暂无评论，快来发表第一篇评论吧 ~</div>';
@@ -355,15 +384,23 @@ let newsinfoobj = {
         });
     },
 
-    // 渲染单条评论 HTML（支持无限级递归）
+    // 渲染单条评论 HTML（扁平化显示，不再递归生成 DOM）
     renderCommentItem: function (comment, isReply) {
         let statusTag = (comment.status === 0) ? ' <span style="color:#f90; font-weight:normal; font-size:12px;">(待审核)</span>' : '';
         let heartColor = comment.isLiked ? "#e60012" : "#a8abb2";
         let likeCount = comment.likeCount || 0;
 
+        // 构建用户名显示部分：如果是回复，显示 "A 回复 B"
+        let userHtml = '<span class="comment-user">' + (comment.username || "匿名用户") + '</span>';
+        if (isReply && comment.replyToUsername) {
+            userHtml += '<span style="color:#999; margin:0 6px; font-size:12px;">回复</span>';
+            userHtml += '<span class="comment-user">' + comment.replyToUsername + '</span>';
+        }
+        userHtml += statusTag;
+
         let html = '<div class="comment-item">';
         html += '  <div style="display: flex; justify-content: space-between; align-items: flex-start;">';
-        html += '    <span class="comment-user">' + (comment.username || "匿名用户") + statusTag + '</span>';
+        html += '    <div>' + userHtml + '</div>';
 
         // 操作区
         html += '    <div style="display: flex; align-items: center; gap: 16px;">';
@@ -371,9 +408,7 @@ let newsinfoobj = {
         html += '        <span class="heart-icon" style="color:' + heartColor + '; font-size: 18px;">❤</span>';
         html += '        <span class="like-count">' + likeCount + '</span>';
         html += '      </span>';
-        if (!isReply) {
-            html += '      <span style="cursor:pointer; font-size: 13px; color: #0066cc;" onclick="newsinfoobj.prepareReply(' + comment.cid + ', \'' + (comment.username || "匿名用户") + '\')">回复</span>';
-        }
+        html += '      <span style="cursor:pointer; font-size: 13px; color: #0066cc;" onclick="newsinfoobj.prepareReply(' + comment.cid + ', \'' + (comment.username || "匿名用户") + '\')">回复</span>';
         html += '    </div>';
         html += '  </div>';
 
@@ -386,16 +421,7 @@ let newsinfoobj = {
             html += '    <span class="comment-delete" onclick="newsinfoobj.deleteComment(' + comment.cid + ')" style="color:#f56c6c; font-size:12px; cursor:pointer;">删除</span>';
         }
         html += '  </div>';
-
-        // 处理递归子评论
-        if (comment.replyList && comment.replyList.length > 0) {
-            html += '<div class="reply-list">';
-            for (let j = 0; j < comment.replyList.length; j++) {
-                html += newsinfoobj.renderCommentItem(comment.replyList[j], true);
-            }
-            html += '</div>';
-        }
-
+        // 注意：这里不再递归调用子菜单了，因为已经在 loadComments 里铺平处理了
         html += '</div>';
         return html;
     },

@@ -53,8 +53,8 @@ public class CommentController {
     public void save(@ModelAttribute CommentModel commentModel) {
         // 让数据库自动生成 cid
         commentModel.setCid(null);
-        // 为了测试和即时可见，暂时默认设置为已通过状态 (1)
-        commentModel.setStatus(1);
+        // 默认设置为待审核状态 (0)
+        commentModel.setStatus(0);
         commentService.save(commentModel);
     }
 

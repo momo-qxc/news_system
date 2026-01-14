@@ -11,7 +11,7 @@
  Target Server Version : 90400 (9.4.0)
  File Encoding         : 65001
 
- Date: 13/01/2026 20:16:24
+ Date: 14/01/2026 11:17:00
 */
 
 SET NAMES utf8mb4;
@@ -66,20 +66,43 @@ CREATE TABLE `tb_comment`  (
   `createdate` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL,
   `nid` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL,
   `status` int NULL DEFAULT NULL,
+  `pid` int NULL DEFAULT 0 COMMENT '父评论ID，0为顶级评论',
   PRIMARY KEY (`cid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tb_comment
 -- ----------------------------
-INSERT INTO `tb_comment` VALUES (2, 0, '一般', '2026/1/7 12:51:49', '23cdd569nvr6', 1);
-INSERT INTO `tb_comment` VALUES (3, 0, '46', '2026/1/7 12:52:06', '23cdd569nvr6', 1);
-INSERT INTO `tb_comment` VALUES (4, 1, '未来可期', '2026/1/7 13:08:02', '23cdd569nvr6', 1);
-INSERT INTO `tb_comment` VALUES (5, 1, 'hao', '2026/1/8 10:35:30', '066473d29hyw', 1);
-INSERT INTO `tb_comment` VALUES (6, 0, '不会吧？', '2026/1/12 13:03:07', '72b569ad5162', 1);
-INSERT INTO `tb_comment` VALUES (8, 0, '打倒资本家', '2026/1/13 09:14:37', '3f7d352c-9efc-4d19-ab4e-1f2cc20301e8', 0);
-INSERT INTO `tb_comment` VALUES (10, 5, '尊都假嘟', '2026/1/13 15:34:00', 'fb692c8f1cep', 1);
-INSERT INTO `tb_comment` VALUES (11, 0, '尊嘟假嘟', '2026/1/13 18:58:26', '3f7d352c-9efc-4d19-ab4e-1f2cc20301e8', 1);
+INSERT INTO `tb_comment` VALUES (2, 0, '一般', '2026/1/7 12:51:49', '23cdd569nvr6', 1, 0);
+INSERT INTO `tb_comment` VALUES (3, 0, '46', '2026/1/7 12:52:06', '23cdd569nvr6', 1, 0);
+INSERT INTO `tb_comment` VALUES (4, 1, '未来可期', '2026/1/7 13:08:02', '23cdd569nvr6', 1, 0);
+INSERT INTO `tb_comment` VALUES (5, 1, 'hao', '2026/1/8 10:35:30', '066473d29hyw', 1, 0);
+INSERT INTO `tb_comment` VALUES (6, 0, '不会吧？', '2026/1/12 13:03:07', '72b569ad5162', 1, 0);
+INSERT INTO `tb_comment` VALUES (8, 0, '打倒资本家', '2026/1/13 09:14:37', '3f7d352c-9efc-4d19-ab4e-1f2cc20301e8', 0, 0);
+INSERT INTO `tb_comment` VALUES (10, 5, '尊都假嘟', '2026/1/13 15:34:00', 'fb692c8f1cep', 1, 0);
+INSERT INTO `tb_comment` VALUES (11, 0, '尊嘟假嘟', '2026/1/13 18:58:26', '3f7d352c-9efc-4d19-ab4e-1f2cc20301e8', 1, 0);
+INSERT INTO `tb_comment` VALUES (12, 1, '赚大钱', '2026/1/13 20:27:13', '4af2c9c17040', 1, 0);
+INSERT INTO `tb_comment` VALUES (13, 1, '@momo 很好', '2026/1/13 20:41:07', '4af2c9c17040', 1, 12);
+INSERT INTO `tb_comment` VALUES (14, 1, '@momo 真的吗', '2026/1/13 20:46:23', '4af2c9c17040', 1, 12);
+INSERT INTO `tb_comment` VALUES (15, 5, '@momo 不好', '2026/1/13 20:47:00', '4af2c9c17040', 1, 12);
+
+-- ----------------------------
+-- Table structure for tb_comment_like
+-- ----------------------------
+DROP TABLE IF EXISTS `tb_comment_like`;
+CREATE TABLE `tb_comment_like`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `cid` int NOT NULL COMMENT '评论ID',
+  `uid` int NOT NULL COMMENT '点赞用户ID',
+  `createdate` datetime NULL DEFAULT NULL COMMENT '点赞时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `cid`(`cid` ASC, `uid` ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of tb_comment_like
+-- ----------------------------
+INSERT INTO `tb_comment_like` VALUES (3, 15, 1, '2026-01-13 20:56:58');
 
 -- ----------------------------
 -- Table structure for tb_history
@@ -91,7 +114,7 @@ CREATE TABLE `tb_history`  (
   `nid` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL,
   `createdate` varchar(30) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '浏览时间',
   PRIMARY KEY (`hid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 21 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 34 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tb_history
@@ -113,6 +136,19 @@ INSERT INTO `tb_history` VALUES (17, 1, 'f78787bfstlv', '2026/1/13 19:12:02');
 INSERT INTO `tb_history` VALUES (18, 1, '793f7de6qkce', '2026/1/13 19:12:05');
 INSERT INTO `tb_history` VALUES (19, 1, '13253139gstz', '2026/1/13 19:12:07');
 INSERT INTO `tb_history` VALUES (20, 1, '23cdd569nvr6', '2026/1/13 19:12:11');
+INSERT INTO `tb_history` VALUES (21, 1, '4af2c9c17040', '2026/1/13 20:27:06');
+INSERT INTO `tb_history` VALUES (22, 1, '4af2c9c17040', '2026/1/13 20:30:46');
+INSERT INTO `tb_history` VALUES (23, 1, '3f7d352c-9efc-4d19-ab4e-1f2cc20301e8', '2026/1/13 20:30:48');
+INSERT INTO `tb_history` VALUES (24, 1, '3f7d352c-9efc-4d19-ab4e-1f2cc20301e8', '2026/1/13 20:39:50');
+INSERT INTO `tb_history` VALUES (25, 1, '4af2c9c17040', '2026/1/13 20:40:51');
+INSERT INTO `tb_history` VALUES (26, 1, '4af2c9c17040', '2026/1/13 20:41:20');
+INSERT INTO `tb_history` VALUES (27, 1, '4af2c9c17040', '2026/1/13 20:46:11');
+INSERT INTO `tb_history` VALUES (28, 5, '4af2c9c17040', '2026/1/13 20:46:56');
+INSERT INTO `tb_history` VALUES (29, 1, '4af2c9c17040', '2026/1/13 20:52:58');
+INSERT INTO `tb_history` VALUES (30, 1, '4af2c9c17040', '2026/1/13 20:56:46');
+INSERT INTO `tb_history` VALUES (31, 1, '066473d29hyw', '2026/1/13 20:57:29');
+INSERT INTO `tb_history` VALUES (32, 1, '23cdd569nvr6', '2026/1/13 20:57:35');
+INSERT INTO `tb_history` VALUES (33, 1, '4af2c9c17040', '2026/1/13 20:57:49');
 
 -- ----------------------------
 -- Table structure for tb_like
@@ -165,6 +201,7 @@ INSERT INTO `tb_news` VALUES ('28113fcc6on4', '黄仁勋新年首场演讲：AI�
 INSERT INTO `tb_news` VALUES ('28706e53iiqn', '韩国总统李在明在上海出席中韩创新创业论坛', '韩国总统李在明在上海出席中韩创新创业论坛 新华网', '2026-01-07 02:31:16', '新华网', 1, 1, 1);
 INSERT INTO `tb_news` VALUES ('2c7e19f6yxb7', '羽毛球——马来西亚公开赛：石宇奇晋级', '羽毛球——马来西亚公开赛：石宇奇晋级 新华网惨遭一轮游！中国队输球引发网友不满，头号组合被日本队逆转 凤凰网马来西亚公开赛首日国羽7胜2负 陈雨菲逆转“梁王”出局 新浪财经马来西亚羽毛球公开赛：郭新娃/陈芳卉晋级混双次轮 光明网羽毛球丨马来西亚公开赛：韩悦晋级 SOHU', '2026-01-07 01:33:09', '新华网', 0, 1, 5);
 INSERT INTO `tb_news` VALUES ('3583887csi03', '2026年中国将推出数据领域国家标准 智能体等前沿方向标准加速布局', '2026年中国将推出数据领域国家标准 智能体等前沿方向标准加速布局 中华网2026年我国将在数据领域发布不少于30项重点标准 新华网从“有数据”到“有生产力”：2026数据要素价值如何兑现 thepaper.cn2026年我国将推出30余项数据领域国家标准 新浪财经2026前瞻｜迈入“价值释放年” 持续点亮数据要素价值 SOHU', '2026-01-06 23:32:05', '中华网', 0, 1, 3);
+INSERT INTO `tb_news` VALUES ('3db0b6d61890', '国台办：愿同包括中国国民党在内的台湾各政党团体和各界人士保持良性互动', '国台办：愿同包括中国国民党在内的台湾各政党团体和各界人士保持良性互动 新华网在Google 新闻上查看完整报道', '2026-01-14 10:11:29', '新华网', 0, 1, 1);
 INSERT INTO `tb_news` VALUES ('3f7d352c-9efc-4d19-ab4e-1f2cc20301e8', '黄仁勋挖角谷歌资深高管，英伟达任命首位 CMO', '北京时间 1 月 9 日，据《华尔街日报》报道，AI 芯片巨头英伟达已聘请谷歌营销高管艾莉森・瓦贡菲尔德（Alison Wagonfeld）担任其首席营销官（CMO）。\n知情人士称，瓦贡菲尔德将成为英伟达的首位 CMO，她将承担此前由多名员工负责的职责，并向 CEO 黄仁勋（Jensen Huang）汇报工作。瓦贡菲尔德将在今年 2 月上任，届时英伟达营销和传播团队的所有成员都将向她汇报工作。\n\n瓦贡菲尔德周四在领英上宣布，她将离开工作近十年的谷歌，跳槽英伟达。在谷歌，她负责谷歌云计算业务的营销工作。\n\n英伟达在过去三年中快速发展，这得益于该公司在先进 AI 工具和服务领域的核心计算机芯片供应商地位。自 2022 年 OpenAI 发布其 ChatGPT 聊天机器人以来，AI 工具和服务迅速兴起。\n\n这一无与伦比的增长使得英伟达的市场营销需求愈发迫切，也让黄仁勋成为 AI 热潮中最具代表性的公众人物之一。\n\n周一，黄仁勋在 CES 2026 上比往年更早地介绍了公司下一代 AI 服务器系统。他表示，巨大的市场需求正在推动整个行业加快开发进度。他对观众说：“AI 竞赛已经开始，每个人都在努力迈向下一个前沿。”\n\n英伟达最新一季度财报显示，公司实现了创纪录的 570 亿美元销售额，同比增长 62%，超出分析师预期。', '2026-01-09 08:23:23', '凤凰科技', 2, 1, 3);
 INSERT INTO `tb_news` VALUES ('459b47b7mhy8', '新疆塔什库尔干塔吉克自治县发生5.2级地震 暂未接到人员伤亡报告', '新疆塔什库尔干塔吉克自治县发生5.2级地震 暂未接到人员伤亡报告 新华网', '2026-01-06 23:44:35', '新华网', 0, 1, 1);
 INSERT INTO `tb_news` VALUES ('4af2c9c17040', '美联储风波叠加地缘政治不确定性 黄金白银期价再创新高', '美联储风波叠加地缘政治不确定性 黄金白银期价再创新高 中国网在Google 新闻上查看完整报道', '2026-01-13 16:18:00', '中国网', 0, 1, 3);
