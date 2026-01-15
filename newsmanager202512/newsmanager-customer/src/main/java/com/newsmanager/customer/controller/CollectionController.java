@@ -35,17 +35,31 @@ public class CollectionController {
 
     @GetMapping("/getbyphone")
     @Operation(description = "根据手机号分页查询收藏的新闻")
-    public String getByPhone(@RequestParam String phone, @RequestParam int pageno, @RequestParam int pagesize) {
-        return restTemplate.getForObject(SERVICE_PATH1 + "/news/collection/getbyphone?phone=" + phone + "&pageno="
-                + pageno + "&pagesize=" + pagesize, String.class);
+    public String getByPhone(@RequestParam String phone, @RequestParam int pageno, @RequestParam int pagesize,
+            @RequestParam(required = false) String keyword) {
+        java.net.URI uri = org.springframework.web.util.UriComponentsBuilder
+                .fromHttpUrl(SERVICE_PATH1 + "/news/collection/getbyphone")
+                .queryParam("phone", phone)
+                .queryParam("pageno", pageno)
+                .queryParam("pagesize", pagesize)
+                .queryParam("keyword", keyword)
+                .build().encode().toUri();
+        return restTemplate.getForObject(uri, String.class);
     }
 
     @GetMapping("/getbyphoneandtid")
     @Operation(description = "根据手机号和分类ID分页查询收藏的新闻")
     public String getByPhoneAndTid(@RequestParam String phone, @RequestParam int tid, @RequestParam int pageno,
-            @RequestParam int pagesize) {
-        return restTemplate.getForObject(SERVICE_PATH1 + "/news/collection/getbyphoneandtid?phone=" + phone + "&tid="
-                + tid + "&pageno=" + pageno + "&pagesize=" + pagesize, String.class);
+            @RequestParam int pagesize, @RequestParam(required = false) String keyword) {
+        java.net.URI uri = org.springframework.web.util.UriComponentsBuilder
+                .fromHttpUrl(SERVICE_PATH1 + "/news/collection/getbyphoneandtid")
+                .queryParam("phone", phone)
+                .queryParam("tid", tid)
+                .queryParam("pageno", pageno)
+                .queryParam("pagesize", pagesize)
+                .queryParam("keyword", keyword)
+                .build().encode().toUri();
+        return restTemplate.getForObject(uri, String.class);
     }
 
     @PostMapping("/save")

@@ -89,20 +89,14 @@ let pageobj = {
 		})
 	},
 
-	// 选择分类（可能在普通模式或收藏模式下）
+	// 选择分类（点击分类链接将切回普通模式）
 	selectCategory: function (tid) {
-		// 如果不是收藏模式，切换回普通模式
-		if (!pageobj.isCollectionMode) {
-			// 切换分类时，保留搜索框内容的显示，loadnews会根据是否有字自动决定是"该分类全部"还是"该分类搜索"
-			pageobj.loadnews(tid);
-		} else {
-			// 收藏模式下切换分类
-			if (tid !== pageobj.currentTid) {
-				pageobj.pageno = 1;
-				pageobj.currentTid = tid;
-			}
-			pageobj.loadnews(tid);
+		pageobj.isCollectionMode = false; // 切换分类即视为退出"我的收藏"模式
+		if (tid !== pageobj.currentTid) {
+			pageobj.pageno = 1;
+			pageobj.currentTid = tid;
 		}
+		pageobj.loadnews(tid);
 	},
 
 	loadnews: function (tid) {
@@ -115,29 +109,28 @@ let pageobj = {
 		let url = "";
 		let phone = sessionStorage.getItem("cuser");
 
+		let searchInputEl = $("#searchInput");
+		let keyword = searchInputEl.length > 0 ? searchInputEl.val().trim() : "";
+
 		if (pageobj.isCollectionMode && phone) {
 			// 收藏模式：调用收藏相关的API
 			if (tid == -1) {
-				url = service_path + "/news/collection/getbyphone?phone=" + phone + "&pageno=" + pageobj.pageno + "&pagesize=" + pageobj.pagesize;
+				url = service_path + "/news/collection/getbyphone?phone=" + phone + "&pageno=" + pageobj.pageno + "&pagesize=" + pageobj.pagesize + "&keyword=" + encodeURIComponent(keyword);
 			} else {
-				url = service_path + "/news/collection/getbyphoneandtid?phone=" + phone + "&tid=" + tid + "&pageno=" + pageobj.pageno + "&pagesize=" + pageobj.pagesize;
+				url = service_path + "/news/collection/getbyphoneandtid?phone=" + phone + "&tid=" + tid + "&pageno=" + pageobj.pageno + "&pagesize=" + pageobj.pagesize + "&keyword=" + encodeURIComponent(keyword);
 			}
 		} else {
 			// 普通模式：调用新闻列表API
-			pageobj.isCollectionMode = false; // 确保退出收藏模式
-
-			// 检查是否有搜索关键词
-			let searchInputEl = $("#searchInput");
-			let keyword = searchInputEl.length > 0 ? searchInputEl.val().trim() : "";
+			pageobj.isCollectionMode = false;
 
 			if (keyword) {
 				// 有搜索词：执行搜索逻辑
 				if (tid == -1) {
 					// 全局搜索
-					url = service_path + "/news/newsinfo/getnewsbykeyword?pageno=" + pageobj.pageno + "&pagesize=" + pageobj.pagesize + "&keyword=" + keyword;
+					url = service_path + "/news/newsinfo/getnewsbykeyword?pageno=" + pageobj.pageno + "&pagesize=" + pageobj.pagesize + "&keyword=" + encodeURIComponent(keyword);
 				} else {
 					// 分类内搜索
-					url = service_path + "/news/newsinfo/getnewsbytidandkeyword?pageno=" + pageobj.pageno + "&pagesize=" + pageobj.pagesize + "&tid=" + tid + "&keyword=" + keyword;
+					url = service_path + "/news/newsinfo/getnewsbytidandkeyword?pageno=" + pageobj.pageno + "&pagesize=" + pageobj.pagesize + "&tid=" + tid + "&keyword=" + encodeURIComponent(keyword);
 				}
 			} else {
 				// 无搜索词：执行普通列表逻辑
@@ -148,6 +141,8 @@ let pageobj = {
 				}
 			}
 		}
+
+		console.log("Active Mode: " + (pageobj.isCollectionMode ? "Collection" : "Global") + ", URL: " + url);
 
 		$.get(url, function (data) {
 			let obj = $.parseJSON(data);
@@ -167,18 +162,8 @@ let pageobj = {
 			$("#currentPage").text(pageobj.pageno);
 			$("#totalPages").text(pageobj.totalPages);
 			$("#pagination").show(); // 确保分页栏显示
-		})
+		});
 	},
-	// ... loadinternal omitted ...
-
-	// ... (omitting middle functions which I am not editing to avoid context issues but I must be careful with replace_file_content logic if I skip them. Wait, I should not skip huge blocks if I can help it, or I should use MULTIPLE replacements if I want to skip the middle.
-	// Actually, I can just target the specific blocks. The "loadinternal" and others are in the middle.
-	// I will split this into multiple replacement chunks using multi_replace_file_content ideally, or just do one replace if the range is contiguous.
-	// But here I'm modifying selectCategory (lines 93-105) and loadnews (lines 107-160). These are contiguous!
-	// AND I am modifying initSearch (260+) and searchNews (281+). These are separated by loadinternal etc.
-	// So distinct tools calls or multi_replace is needed.
-	// I will use multi_replace for safety and clarity.
-	// ... loadinternal omitted in edit but kept in file via context ...
 
 	loadinternal: function (tid, cnt) {
 		$.get(service_path + "/news/newsinfo/getbytid?pageno=1&pagesize=5&tid=" + tid, function (data) {

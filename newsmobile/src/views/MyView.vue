@@ -59,7 +59,7 @@
       </van-cell-group>
 
       <van-cell-group inset class="mt-16">
-        <van-cell title="清除缓存" icon="delete-o" is-link @click="clearCache" />
+
         <van-cell title="关于我们" icon="info-o" is-link @click="showAbout = true" />
       </van-cell-group>
 
@@ -535,16 +535,7 @@ export default {
       }
     },
 
-    // 清除缓存
-    clearCache() {
-      this.$dialog.confirm({
-        title: '提示',
-        message: '确定要清除缓存吗？'
-      }).then(() => {
-        localStorage.clear()
-        this.$toast.success('缓存已清除')
-      }).catch(() => {})
-    }
+
   },
   beforeDestroy() {
     if (this.countdownTimer) {

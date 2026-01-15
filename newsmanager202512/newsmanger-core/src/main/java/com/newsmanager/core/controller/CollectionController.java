@@ -68,15 +68,16 @@ public class CollectionController {
 
     @GetMapping("/getbyphone")
     @Operation(summary = "根据手机号分页查询收藏的新闻")
-    public PagerTemplate getByPhone(@RequestParam String phone, @RequestParam int pageno, @RequestParam int pagesize) {
-        return collectionService.getByPhone(phone, pageno, pagesize);
+    public PagerTemplate getByPhone(@RequestParam String phone, @RequestParam int pageno, @RequestParam int pagesize,
+            @RequestParam(required = false) String keyword) {
+        return collectionService.getByPhone(phone, pageno, pagesize, keyword);
     }
 
     @GetMapping("/getbyphoneandtid")
     @Operation(summary = "根据手机号和分类ID分页查询收藏的新闻")
     public PagerTemplate getByPhoneAndTid(@RequestParam String phone, @RequestParam int tid, @RequestParam int pageno,
-            @RequestParam int pagesize) {
-        return collectionService.getByPhoneAndTid(phone, tid, pageno, pagesize);
+            @RequestParam int pagesize, @RequestParam(required = false) String keyword) {
+        return collectionService.getByPhoneAndTid(phone, tid, pageno, pagesize, keyword);
     }
 
     @GetMapping("/getone")

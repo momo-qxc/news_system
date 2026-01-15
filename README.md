@@ -80,17 +80,15 @@ graph TD
 | **核心框架** | Spring Boot | 3.5.9 |
 | **ORM** | MyBatis + MyBatis-Plus | 3.5.7 |
 | **数据库** | MySQL | 9.4.0 |
-| **缓存** | Redis | 3.2.100 |
+| **缓存** | Redis | 3.2.1 |
 | **微服务** | Spring Cloud | 2025.0.1 |
 | **服务注册** | Netflix Eureka | 3节点集群 |
-| **API网关** | Spring Cloud Gateway | (WebFlux) |
-| **负载均衡** | Spring Cloud LoadBalancer | - |
-|              |                           |           |
+| **API网关** | Spring Cloud Gateway |  |
 | **API文档** | Swagger | 2.6.0 |
 | **实体简化** | Lombok | 1.18.30 |
-| **工具类** | Apache Commons Lang3 | 3.18.0 |
-| **架构规范** | COLA Component DTO | 4.3.2 |
-| **HTML解析** | JSoup | 1.18.1 |
+| **工具类**   | Apache Commons Lang3   | 3.18.0    |
+| **架构规范** | COLA Component DTO     | 4.3.2     |
+| **HTML解析** | JSoup                  | 1.18.1    |
 
 ### 🌐 前端技术栈
 
