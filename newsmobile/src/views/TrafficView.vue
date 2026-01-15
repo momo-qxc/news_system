@@ -38,7 +38,7 @@
 </template>
 
 <script>
-/* global BMapSub */
+/* global BMapSub, BMapGL */
 
 export default {
   name: 'TrafficView',
@@ -55,7 +55,7 @@ export default {
   mounted() {
     this.initSubwayCities()
     this.$nextTick(() => {
-      this.initSubway()
+      this.autoSelectCityByLocation()
     })
   },
   methods: {
@@ -68,6 +68,42 @@ export default {
         if (defaultCity) {
           this.currentCityCode = defaultCity.citycode
         }
+      }
+    },
+
+    // 根据定位自动选择城市
+    autoSelectCityByLocation() {
+      if (typeof BMapGL !== 'undefined') {
+        const geolocation = new BMapGL.Geolocation()
+        geolocation.getCurrentPosition((result) => {
+          if (geolocation.getStatus() === 0 && result.address && result.address.city) {
+            // 获取定位城市名称（去掉"市"后缀）
+            let cityName = result.address.city.replace('市', '')
+            
+            // 查找是否有该城市的地铁
+            let matchedCity = this.subwayCities.find(c => c.name === cityName)
+            
+            // 如果没有精确匹配，尝试模糊匹配
+            if (!matchedCity) {
+              matchedCity = this.subwayCities.find(c => 
+                c.name.includes(cityName) || cityName.includes(c.name)
+              )
+            }
+            
+            if (matchedCity) {
+              this.currentCity = matchedCity.name
+              this.currentCityCode = matchedCity.citycode
+            }
+            // 无论是否匹配到城市，都初始化地铁图
+            this.initSubway()
+          } else {
+            // 定位失败，使用默认城市
+            this.initSubway()
+          }
+        }, { enableHighAccuracy: true, timeout: 5000 })
+      } else {
+        // 百度地图未加载，使用默认城市
+        this.initSubway()
       }
     },
 

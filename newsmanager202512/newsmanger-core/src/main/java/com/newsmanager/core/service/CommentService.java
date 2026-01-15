@@ -1,7 +1,10 @@
 package com.newsmanager.core.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newsmanager.api.models.CommentModel;
+import com.newsmanager.api.models.PagerTemplate;
 import com.newsmanager.core.mapper.IComment;
 import com.newsmanager.core.mapper.ICommentLike;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +21,19 @@ public class CommentService {
     @Autowired
     private ICommentLike commentLikeMapper;
 
-    public List<CommentModel> get() {
-        return commentMapper.selectList(null);
+    public PagerTemplate get(int pageno, int pagesize) {
+        QueryWrapper<CommentModel> qw = new QueryWrapper<>();
+        qw.orderByDesc("cid"); // 按评论ID倒序（ID自增，越新ID越大）
+        IPage<CommentModel> pager = new Page<>(pageno, pagesize);
+        IPage<CommentModel> mypage = commentMapper.selectPage(pager, qw);
+
+        PagerTemplate pt = new PagerTemplate();
+        pt.setList(mypage.getRecords());
+        pt.setPageno(mypage.getCurrent());
+        pt.setPagesize(mypage.getSize());
+        pt.setTotal(mypage.getTotal());
+        pt.setTotalpage(mypage.getPages());
+        return pt;
     }
 
     public List<CommentModel> getbynidwithtree(String nid, Integer currentUid) {

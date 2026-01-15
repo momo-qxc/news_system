@@ -79,4 +79,30 @@ public class NewsController {
                 newsModel, headers);
         restTemplate.postForObject(SERVICE_PATH1 + "/news/save", entity, String.class);
     }
+
+    @GetMapping("/countByDate")
+    @Operation(description = "统计指定日期的新闻数量")
+    public String countByDate(@RequestParam String date) {
+        return restTemplate.getForObject(SERVICE_PATH1 + "/news/countByDate?date=" + date, String.class);
+    }
+
+    @DeleteMapping("/deleteByDate")
+    @Operation(description = "删除指定日期的所有新闻（超级管理员）")
+    public String deleteByDate(@RequestParam String date) {
+        // 使用 exchange 获取 DELETE 请求的返回值
+        org.springframework.http.ResponseEntity<String> response = restTemplate.exchange(
+                SERVICE_PATH1 + "/news/deleteByDate?date=" + date,
+                org.springframework.http.HttpMethod.DELETE,
+                null,
+                String.class);
+        return response.getBody();
+    }
+
+    @GetMapping("/getByDate")
+    @Operation(description = "按日期分页查询新闻（管理后台）")
+    public String getByDate(@RequestParam int pageno, @RequestParam int pagesize, @RequestParam String date) {
+        return restTemplate.getForObject(
+                SERVICE_PATH1 + "/news/getByDate?pageno=" + pageno + "&pagesize=" + pagesize + "&date=" + date,
+                String.class);
+    }
 }

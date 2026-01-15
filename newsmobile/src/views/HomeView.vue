@@ -55,25 +55,29 @@
       </div>
     </div>
 
-    <!-- 新闻列表区域 -->
-    <div class="content">
-      <van-list
-        v-model="loading"
-        :finished="finished"
-        finished-text="没有更多了"
-        @load="onLoad"
-      >
-        <van-cell 
-          v-for="item in newsList" 
-          :key="item.nid"
-          :title="item.ntitle"
-          :label="item.createdate"
-          is-link
-          @click="goToDetail(item.nid)"
-        />
-      </van-list>
-      <van-empty v-if="!loading && newsList.length === 0" description="暂无新闻数据" />
-    </div>
+    <!-- 新闻列表区域（支持下拉刷新） -->
+    <van-pull-refresh v-model="refreshing" @refresh="onRefresh" success-text="刷新成功">
+      <div class="content">
+        <van-list
+          v-model="loading"
+          :finished="finished"
+          finished-text="没有更多了"
+          loading-text="加载中..."
+          @load="onLoad"
+          :immediate-check="false"
+        >
+          <van-cell 
+            v-for="item in newsList" 
+            :key="item.nid"
+            :title="item.ntitle"
+            :label="item.createdate"
+            is-link
+            @click="goToDetail(item.nid)"
+          />
+        </van-list>
+        <van-empty v-if="!loading && !refreshing && newsList.length === 0" description="暂无新闻数据" />
+      </div>
+    </van-pull-refresh>
 
     <!-- 底部 Tabbar -->
     <van-tabbar v-model="active" active-color="#e60012" route>
@@ -106,6 +110,7 @@ export default {
       newsList: [],
       loading: false,
       finished: false,
+      refreshing: false,  // 下拉刷新状态
       pageno: 1,
       pagesize: 10,
       currentTid: -1,  // -1 表示全部
@@ -126,6 +131,8 @@ export default {
   mounted() {
     this.init();
     this.fetchNotices();
+    // 初始加载新闻列表
+    this.onLoad();
   },
   methods: {
     init() {
@@ -306,6 +313,52 @@ export default {
         })
         .catch(err => {
           console.error("Fetch notices error:", err);
+        });
+    },
+    // 下拉刷新
+    onRefresh() {
+      // 重置状态
+      this.newsList = [];
+      this.pageno = 1;
+      this.finished = false;
+      this.loading = true;
+      
+      // 重新加载数据
+      let url = '';
+      if (this.currentTid === -1) {
+        url = `${API_BASE_URL}/news/newsinfo/get?pageno=${this.pageno}&pagesize=${this.pagesize}`;
+      } else {
+        url = `${API_BASE_URL}/news/newsinfo/getbytid?pageno=${this.pageno}&pagesize=${this.pagesize}&tid=${this.currentTid}`;
+      }
+      
+      axios.get(url)
+        .then(response => {
+          let data = response.data;
+          if (typeof data === "string") {
+            try {
+              data = JSON.parse(data);
+            } catch (e) {
+              data = { list: [], totalpage: 1 };
+            }
+          }
+          
+          if (data.list && data.list.length > 0) {
+            this.newsList = data.list;
+            this.pageno++;
+          }
+          
+          if (this.pageno > data.totalpage || !data.list || data.list.length === 0) {
+            this.finished = true;
+          }
+          
+          this.loading = false;
+          this.refreshing = false;
+        })
+        .catch(error => {
+          console.error("Refresh error:", error);
+          this.loading = false;
+          this.refreshing = false;
+          this.finished = true;
         });
     }
   }

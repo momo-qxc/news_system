@@ -93,9 +93,12 @@ public class CommentController {
     }
 
     @GetMapping("/get")
-    @Operation(description = "获取所有评论(管理后台)")
-    public String getAll() {
-        return restTemplate.getForObject(SERVICE_PATH1 + "/comment/get", String.class);
+    @Operation(description = "获取所有评论(管理后台，分页)")
+    public String getAll(
+            @RequestParam(defaultValue = "1") int pageno,
+            @RequestParam(defaultValue = "10") int pagesize) {
+        return restTemplate.getForObject(SERVICE_PATH1 + "/comment/get?pageno=" + pageno + "&pagesize=" + pagesize,
+                String.class);
     }
 
     @PutMapping("/check")

@@ -133,6 +133,22 @@
 				<div v-if="activeMenu === 'news'" class="content-card">
 					<div class="card-header">
 						<span>新闻管理</span>
+						<div v-if="isSuperAdmin" style="display: flex; align-items: center; gap: 10px;">
+							<el-date-picker
+								v-model="batchDeleteDate"
+								type="date"
+								placeholder="选择日期"
+								size="small"
+								value-format="yyyy-MM-dd"
+								style="width: 150px;">
+							</el-date-picker>
+							<el-button 
+								type="danger" 
+								size="small" 
+								icon="el-icon-delete"
+								:disabled="!batchDeleteDate"
+								@click="previewBatchDelete">批量删除</el-button>
+						</div>
 					</div>
 					<el-table :data="newsList" style="width: 100%">
 						<el-table-column prop="nid" label="新闻ID" width="120" show-overflow-tooltip></el-table-column>
@@ -174,6 +190,27 @@
 						:current-page.sync="newsPageNo"
 						@current-change="loadNews">
 					</el-pagination>
+					
+					<!-- 批量删除确认弹窗 -->
+					<el-dialog 
+						title="确认批量删除" 
+						:visible.sync="showBatchDeleteConfirm" 
+						width="400px">
+						<div style="text-align: center;">
+							<i class="el-icon-warning" style="font-size: 48px; color: #E6A23C;"></i>
+							<p style="margin: 20px 0; font-size: 16px;">
+								您即将删除 <strong style="color: #F56C6C;">{{ batchDeleteDate }}</strong> 的所有新闻
+							</p>
+							<p style="font-size: 24px; font-weight: bold; color: #F56C6C;">
+								共 {{ batchDeleteCount }} 条
+							</p>
+							<p style="color: #909399; font-size: 12px;">此操作不可恢复，请谨慎操作！</p>
+						</div>
+						<div slot="footer">
+							<el-button @click="showBatchDeleteConfirm = false">取消</el-button>
+							<el-button type="danger" @click="confirmBatchDelete">确认删除</el-button>
+						</div>
+					</el-dialog>
 				</div>
 				
 				<!-- 评论管理 -->
@@ -217,6 +254,14 @@
 							</template>
 						</el-table-column>
 					</el-table>
+					<el-pagination
+						class="comment-pagination"
+						layout="prev, pager, next"
+						:total="commentTotal"
+						:page-size="commentPageSize"
+						:current-page.sync="commentPageNo"
+						@current-change="loadComments">
+					</el-pagination>
 				</div>
 				
 				<!-- 个人信息 -->
@@ -486,6 +531,9 @@ export default {
 			newsPageSize: 10,
 			// 评论管理
 			commentList: [],
+			commentTotal: 0,
+			commentPageNo: 1,
+			commentPageSize: 10,
 			userMap: {}, // uid -> username 映射
 			// 个人信息管理
 			adminList: [],
@@ -500,8 +548,17 @@ export default {
 			crawlerForm: { tid: 0, limit: 10 },
 			crawlerLogs: [],
 			crawlerStatus: false,
-			crawlerTimer: null
+			crawlerTimer: null,
+			// 批量删除
+			batchDeleteDate: null,
+			batchDeleteCount: 0,
+			showBatchDeleteConfirm: false
 		};
+	},
+	computed: {
+		isSuperAdmin() {
+			return sessionStorage.getItem('adminType') === '1';
+		}
 	},
 	created() {
 		// 检查登录状态
@@ -567,6 +624,17 @@ export default {
 				if (this.crawlerTimer) {
 					clearInterval(this.crawlerTimer);
 					this.crawlerTimer = null;
+				}
+			}
+		},
+		// 监听日期选择变化，按日期筛选新闻
+		batchDeleteDate(newDate) {
+			if (this.activeMenu === 'news') {
+				this.newsPageNo = 1; // 重置页码
+				if (newDate) {
+					this.loadNewsByDate(newDate);
+				} else {
+					this.loadNews();
 				}
 			}
 		}
@@ -714,6 +782,21 @@ export default {
 				}
 			}).catch(err => console.log(err));
 		},
+		// 按日期加载新闻列表
+		loadNewsByDate(date) {
+			axios.get('http://localhost:6060/news/newsinfo/getByDate', {
+				params: {
+					pageno: this.newsPageNo,
+					pagesize: this.newsPageSize,
+					date: date
+				}
+			}).then(res => {
+				if (res.data && res.data.list) {
+					this.newsList = res.data.list;
+					this.newsTotal = res.data.total || 0;
+				}
+			}).catch(err => console.log(err));
+		},
 		// 审核通过
 		approveNews(nid) {
 			axios.put('http://localhost:6060/news/newsinfo/checknews', null, {
@@ -761,6 +844,42 @@ export default {
 					});
 			}).catch(() => {});
 		},
+		// 预览批量删除 - 获取该日期新闻数量
+		previewBatchDelete() {
+			if (!this.batchDeleteDate) {
+				this.$message.warning('请先选择日期');
+				return;
+			}
+			axios.get('http://localhost:6060/news/newsinfo/countByDate', {
+				params: { date: this.batchDeleteDate }
+			}).then(res => {
+				this.batchDeleteCount = res.data || 0;
+				if (this.batchDeleteCount === 0) {
+					this.$message.info('该日期没有新闻');
+					return;
+				}
+				this.showBatchDeleteConfirm = true;
+			}).catch(err => {
+				console.log(err);
+				this.$message.error('查询失败');
+			});
+		},
+		// 确认批量删除
+		confirmBatchDelete() {
+			axios.delete('http://localhost:6060/news/newsinfo/deleteByDate', {
+				params: { date: this.batchDeleteDate }
+			}).then(res => {
+				this.$message.success(`成功删除 ${res.data} 条新闻`);
+				this.showBatchDeleteConfirm = false;
+				this.batchDeleteDate = null;
+				this.batchDeleteCount = 0;
+				this.loadNews();
+				this.loadStats(); // 刷新统计
+			}).catch(err => {
+				console.log(err);
+				this.$message.error('删除失败');
+			});
+		},
 		// 获取用户名
 		getUserName(uid) {
 			if (this.userMap[uid]) {
@@ -770,14 +889,19 @@ export default {
 		},
 		// 加载评论列表
 		loadComments() {
-			axios.get('http://localhost:6060/news/comment/get')
-				.then(res => {
-					if (res.data && Array.isArray(res.data)) {
-						this.commentList = res.data;
-						// 加载用户信息
-						this.loadUsers();
-					}
-				}).catch(err => console.log(err));
+			axios.get('http://localhost:6060/news/comment/get', {
+				params: {
+					pageno: this.commentPageNo,
+					pagesize: this.commentPageSize
+				}
+			}).then(res => {
+				if (res.data && res.data.list) {
+					this.commentList = res.data.list;
+					this.commentTotal = res.data.total || 0;
+					// 加载用户信息
+					this.loadUsers();
+				}
+			}).catch(err => console.log(err));
 		},
 		// 加载用户信息
 		loadUsers() {

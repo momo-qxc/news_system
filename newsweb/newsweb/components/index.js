@@ -1,6 +1,6 @@
 let pageobj = {
 	pageno: 1,
-	pagesize: 5,
+	pagesize: 25,
 	totalPages: 1,
 	currentTid: -1, // 当前选中的分类ID，-1表示全部
 	isCollectionMode: false, // 是否为"我的收藏"模式
@@ -154,9 +154,6 @@ let pageobj = {
 			let result = "";
 			if (obj.list && obj.list.length > 0) {
 				for (let i = 0; i < obj.list.length; i++) {
-					if (i != 0 && i % 5 == 0) {
-						result += "<li class='space'></li>";
-					}
 					result += "<li><a href='newsinfo.html?nid=" + obj.list[i].nid + "'>" + obj.list[i].ntitle + "</a><span>" +
 						obj.list[i].createdate + "</span></li>";
 				}

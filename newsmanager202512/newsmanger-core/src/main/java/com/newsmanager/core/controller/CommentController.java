@@ -1,6 +1,7 @@
 package com.newsmanager.core.controller;
 
 import com.newsmanager.api.models.CommentModel;
+import com.newsmanager.api.models.PagerTemplate;
 import com.newsmanager.core.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,9 +19,11 @@ public class CommentController {
     private CommentService commentService;
 
     @GetMapping("/get")
-    @Operation(summary = "查询所有评论")
-    public List<CommentModel> get() {
-        return commentService.get();
+    @Operation(summary = "分页查询所有评论（按时间倒序）")
+    public PagerTemplate get(
+            @RequestParam(defaultValue = "1") int pageno,
+            @RequestParam(defaultValue = "10") int pagesize) {
+        return commentService.get(pageno, pagesize);
     }
 
     @GetMapping("/getbynid")

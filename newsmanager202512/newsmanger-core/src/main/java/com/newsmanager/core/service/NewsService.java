@@ -38,6 +38,7 @@ public class NewsService {
         QueryWrapper<NewsModel> qw = new QueryWrapper<>();
         qw.eq("tid", tid);
         qw.eq("status", 1); // 只显示已审核的新闻
+        qw.orderByDesc("createdate"); // 按时间倒序排列
         IPage<NewsModel> pager = new Page<>(pageno, pagesize);
         IPage<NewsModel> mypage = new NewsModel().selectPage(pager, qw);
 
@@ -142,5 +143,35 @@ public class NewsService {
         QueryWrapper<NewsModel> qw = new QueryWrapper<>();
         qw.eq("ntitle", title);
         return new NewsModel().selectOne(qw);
+    }
+
+    // 统计指定日期新闻数量（用于批量删除确认）
+    public int countByDate(String date) {
+        QueryWrapper<NewsModel> qw = new QueryWrapper<>();
+        qw.apply("DATE(createdate) = {0}", date);
+        return (int) new NewsModel().selectCount(qw);
+    }
+
+    // 删除指定日期所有新闻
+    public int deleteByDate(String date) {
+        QueryWrapper<NewsModel> qw = new QueryWrapper<>();
+        qw.apply("DATE(createdate) = {0}", date);
+        return dao.delete(qw);
+    }
+
+    // 按日期分页查询新闻（管理后台）
+    public PagerTemplate getByDate(long pageno, long pagesize, String date) {
+        QueryWrapper<NewsModel> qw = new QueryWrapper<>();
+        qw.apply("DATE(createdate) = {0}", date);
+        qw.orderByDesc("createdate");
+        IPage<NewsModel> pager = new Page<>(pageno, pagesize);
+        IPage<NewsModel> mypage = new NewsModel().selectPage(pager, qw);
+        PagerTemplate pt = new PagerTemplate();
+        pt.setList(mypage.getRecords());
+        pt.setPageno(mypage.getCurrent());
+        pt.setPagesize(mypage.getSize());
+        pt.setTotal(mypage.getTotal());
+        pt.setTotalpage(mypage.getPages());
+        return pt;
     }
 }

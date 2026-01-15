@@ -69,7 +69,51 @@ graph TD
 
 ---
 
-## 3. 核心技术亮点
+## 3. 技术栈详情
+
+### 🔧 后端技术栈
+
+| 类别 | 技术 | 版本 |
+|------|------|------|
+| **构建工具** | Maven | 3.6.3 |
+| **JDK** | JDK | 17 |
+| **核心框架** | Spring Boot | 3.5.9 |
+| **ORM** | MyBatis + MyBatis-Plus | 3.5.7 |
+| **数据库** | MySQL | 9.4.0 |
+| **缓存** | Redis | 3.2.100 |
+| **微服务** | Spring Cloud | 2025.0.1 |
+| **服务注册** | Netflix Eureka | 3节点集群 |
+| **API网关** | Spring Cloud Gateway | (WebFlux) |
+| **负载均衡** | Spring Cloud LoadBalancer | - |
+| **熔断降级** | Resilience4j | - |
+| **API文档** | SpringDoc OpenAPI | 2.6.0 |
+| **实体简化** | Lombok | 1.18.30 |
+| **工具类** | Apache Commons Lang3 | 3.18.0 |
+| **架构规范** | COLA Component DTO | 4.3.2 |
+| **HTML解析** | JSoup | 1.18.1 |
+
+### 🌐 前端技术栈
+
+| 类别 | 技术 | 版本 |
+|------|------|------|
+| **基础** | HTML5 + CSS3 | - |
+| **核心框架** | Vue.js | 2.6.14 |
+| **路由** | Vue Router | 3.5.1 |
+| **HTTP请求** | Axios | 1.13.2 |
+| **移动端UI** | Vant UI | 2.13.9 |
+| **后台管理UI** | Element UI | 2.15.14 |
+| **图表** | amCharts 5 | 5.15.1 |
+| **地图可视化** | amCharts Geodata | 5.1.5 |
+| **地图** | 百度地图 (BMAP) | - |
+| **跨平台** | UniApp | - |
+| **DOM操作** | jQuery | 1.12.4 |
+| **构建工具** | Vue CLI | 5.0.0 |
+| **代码转译** | Babel | 7.12.16 |
+| **代码规范** | ESLint | 7.32.0 |
+
+---
+
+## 4. 核心技术亮点
 
 1.  **全终端覆盖**: 无论是桌面浏览还是手机碎片时间，或是后台重度管理，均有独立且专业的客户端支持。
 2.  **Java 原生采集**: 摒弃 Python 脚本，爬虫逻辑作为 `@Service` 深度集成于 Java 服务中，可直接复用 Spring 上下文和事务控制。
@@ -78,7 +122,7 @@ graph TD
 
 ---
 
-## 4. 目录结构说明
+## 5. 目录结构说明
 
 ```text
 news/

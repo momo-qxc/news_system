@@ -169,7 +169,11 @@ export default {
         if (this.geolocation.getStatus() === 0) {
           // 定位成功
           this.currentPoint = result.point
-          this.currentAddress = result.address.province + result.address.city + result.address.district + result.address.street + result.address.streetNumber
+          // 过滤掉 undefined/null 的地址部分
+          const addr = result.address
+          this.currentAddress = [addr.province, addr.city, addr.district, addr.street, addr.streetNumber]
+            .filter(part => part && part !== 'undefined')
+            .join('')
           
           // 移动地图到当前位置
           this.map.centerAndZoom(result.point, 16)

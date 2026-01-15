@@ -16,18 +16,18 @@ import java.util.List;
 @Schema(description = "分页模板实体类")
 public class PagerTemplate implements Serializable {
 
-    //当前页码
+    // 当前页码
     private long pageno;
 
-    //每页显示记录数
+    // 每页显示记录数
     private long pagesize;
 
-    //总记录数
+    // 总记录数
     private long total;
 
-    //总页数
+    // 总页数
     private long totalpage;
 
-    //分页查询当前页的结果集
-    private List<NewsModel> list;
+    // 分页查询当前页的结果集
+    private List<?> list;
 }

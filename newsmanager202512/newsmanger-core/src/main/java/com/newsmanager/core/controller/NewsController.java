@@ -91,4 +91,22 @@ public class NewsController {
     public void updatelcnt(@RequestParam String nid, @RequestParam Integer cnt) {
         newsService.updatelcnt(nid, cnt);
     }
+
+    @GetMapping("/countByDate")
+    @Operation(summary = "统计指定日期的新闻数量")
+    public int countByDate(@RequestParam String date) {
+        return newsService.countByDate(date);
+    }
+
+    @DeleteMapping("/deleteByDate")
+    @Operation(summary = "删除指定日期的所有新闻（超级管理员）")
+    public int deleteByDate(@RequestParam String date) {
+        return newsService.deleteByDate(date);
+    }
+
+    @GetMapping("/getByDate")
+    @Operation(summary = "按日期分页查询新闻（管理后台）")
+    public PagerTemplate getByDate(@RequestParam long pageno, @RequestParam long pagesize, @RequestParam String date) {
+        return newsService.getByDate(pageno, pagesize, date);
+    }
 }
