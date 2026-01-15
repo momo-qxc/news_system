@@ -17,11 +17,11 @@ spring:
           globalcors:
             cors-configurations:
               '[/**]':
-                allowedOrigins: "*"
+                allowedOrigins: "*" # 允许所有来源
                 allowedMethods:
                   - GET
                   - POST
                   - PUT
                   - DELETE
                   - OPTIONS
-                allowedHeaders: "*"
+                allowedHeaders: "*" # 允许所有请求头

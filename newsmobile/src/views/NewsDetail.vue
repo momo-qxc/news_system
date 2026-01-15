@@ -128,6 +128,10 @@
             <div v-for="reply in comment.replyList" :key="reply.cid" class="reply-item">
               <div class="reply-header">
                 <span class="reply-user">{{ reply.username || '匿名用户' }}</span>
+                <template v-if="reply.replyToUsername">
+                  <span class="reply-to-text">回复</span>
+                  <span class="reply-user">{{ reply.replyToUsername }}</span>
+                </template>
                 <span v-if="reply.status === 0" class="pending-tag">待审核</span>
               </div>
               <div class="reply-text">{{ reply.content }}</div>
@@ -136,6 +140,10 @@
                 <div class="interaction-item" @click.stop="toggleCommentLike(reply)">
                   <van-icon :name="reply.isLiked ? 'like' : 'like-o'" :color="reply.isLiked ? '#e60012' : '#969799'" />
                   <span>{{ reply.likeCount || 0 }}</span>
+                </div>
+                <div class="interaction-item" @click.stop="prepareReply(reply)">
+                  <van-icon name="comment-o" />
+                  <span>回复</span>
                 </div>
               </div>
             </div>
@@ -339,7 +347,18 @@ export default {
         const res = await axios.get(`${API_BASE_URL}/news/comment/getbynid?nid=${this.nid}&phone=${this.phone || ''}`)
         let data = res.data
         if (typeof data === 'string') data = JSON.parse(data)
-        this.comments = data || []
+        
+        let processedComments = data || []
+        // 对每一条根评论进行铺平处理
+        processedComments.forEach(root => {
+          let flatReplies = []
+          if (root.replyList && root.replyList.length > 0) {
+            this.flattenComments(root, flatReplies)
+          }
+          root.replyList = flatReplies
+        })
+        
+        this.comments = processedComments
       } catch (e) {
         console.error('Load comments error:', e)
       }
@@ -398,6 +417,19 @@ export default {
       this.replyTo = comment
       this.commentContent = `@${comment.username || '匿名用户'} `
       this.scrollToComment()
+    },
+
+    // 递归铺平评论
+    flattenComments(parent, targetList) {
+      if (parent.replyList && parent.replyList.length > 0) {
+        parent.replyList.forEach(reply => {
+          // 记录回复对象
+          reply.replyToUsername = parent.username || '匿名用户'
+          targetList.push(reply)
+          // 递归处理子回复
+          this.flattenComments(reply, targetList)
+        })
+      }
     },
 
     // 切换评论点赞状态
@@ -665,6 +697,11 @@ export default {
 }
 .reply-user {
   color: #1989fa;
+}
+.reply-to-text {
+  color: #969799;
+  margin: 0 4px;
+  font-size: 12px;
 }
 .reply-text {
   font-size: 13px;

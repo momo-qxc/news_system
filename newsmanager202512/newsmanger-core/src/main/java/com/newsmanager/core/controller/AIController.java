@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/total") // 借用权限较高的路径，或新建路径并在 Gateway 配置
+@RequestMapping("/total")
 @Tag(name = "AIController", description = "AI 智能审核接口")
 @CrossOrigin // 允许跨域
 public class AIController {

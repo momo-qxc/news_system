@@ -89,9 +89,9 @@ let pageobj = {
 		})
 	},
 
-	// 选择分类（点击分类链接将切回普通模式）
+	// 选择分类
 	selectCategory: function (tid) {
-		pageobj.isCollectionMode = false; // 切换分类即视为退出"我的收藏"模式
+		// 修改：不再强制退出收藏模式，允许在收藏夹内按分类筛选
 		if (tid !== pageobj.currentTid) {
 			pageobj.pageno = 1;
 			pageobj.currentTid = tid;
