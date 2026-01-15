@@ -93,6 +93,7 @@ let pageobj = {
 	selectCategory: function (tid) {
 		// 如果不是收藏模式，切换回普通模式
 		if (!pageobj.isCollectionMode) {
+			// 切换分类时，保留搜索框内容的显示，loadnews会根据是否有字自动决定是"该分类全部"还是"该分类搜索"
 			pageobj.loadnews(tid);
 		} else {
 			// 收藏模式下切换分类
@@ -124,10 +125,27 @@ let pageobj = {
 		} else {
 			// 普通模式：调用新闻列表API
 			pageobj.isCollectionMode = false; // 确保退出收藏模式
-			if (tid == -1) {
-				url = service_path + "/news/newsinfo/get?pageno=" + pageobj.pageno + "&pagesize=" + pageobj.pagesize;
+
+			// 检查是否有搜索关键词
+			let searchInputEl = $("#searchInput");
+			let keyword = searchInputEl.length > 0 ? searchInputEl.val().trim() : "";
+
+			if (keyword) {
+				// 有搜索词：执行搜索逻辑
+				if (tid == -1) {
+					// 全局搜索
+					url = service_path + "/news/newsinfo/getnewsbykeyword?pageno=" + pageobj.pageno + "&pagesize=" + pageobj.pagesize + "&keyword=" + keyword;
+				} else {
+					// 分类内搜索
+					url = service_path + "/news/newsinfo/getnewsbytidandkeyword?pageno=" + pageobj.pageno + "&pagesize=" + pageobj.pagesize + "&tid=" + tid + "&keyword=" + keyword;
+				}
 			} else {
-				url = service_path + "/news/newsinfo/getbytid?pageno=" + pageobj.pageno + "&pagesize=" + pageobj.pagesize + "&tid=" + tid;
+				// 无搜索词：执行普通列表逻辑
+				if (tid == -1) {
+					url = service_path + "/news/newsinfo/get?pageno=" + pageobj.pageno + "&pagesize=" + pageobj.pagesize;
+				} else {
+					url = service_path + "/news/newsinfo/getbytid?pageno=" + pageobj.pageno + "&pagesize=" + pageobj.pagesize + "&tid=" + tid;
+				}
 			}
 		}
 
@@ -143,7 +161,7 @@ let pageobj = {
 						obj.list[i].createdate + "</span></li>";
 				}
 			} else {
-				result = "<li style='color:#999;'>暂无数据</li>";
+				result = "<li style='color:#999; padding:20px; text-align:center;'>暂无数据</li>";
 			}
 			$(".classlist").html(result);
 
@@ -151,8 +169,20 @@ let pageobj = {
 			pageobj.totalPages = obj.totalpage || 1;
 			$("#currentPage").text(pageobj.pageno);
 			$("#totalPages").text(pageobj.totalPages);
+			$("#pagination").show(); // 确保分页栏显示
 		})
 	},
+	// ... loadinternal omitted ...
+
+	// ... (omitting middle functions which I am not editing to avoid context issues but I must be careful with replace_file_content logic if I skip them. Wait, I should not skip huge blocks if I can help it, or I should use MULTIPLE replacements if I want to skip the middle.
+	// Actually, I can just target the specific blocks. The "loadinternal" and others are in the middle.
+	// I will split this into multiple replacement chunks using multi_replace_file_content ideally, or just do one replace if the range is contiguous.
+	// But here I'm modifying selectCategory (lines 93-105) and loadnews (lines 107-160). These are contiguous!
+	// AND I am modifying initSearch (260+) and searchNews (281+). These are separated by loadinternal etc.
+	// So distinct tools calls or multi_replace is needed.
+	// I will use multi_replace for safety and clarity.
+	// ... loadinternal omitted in edit but kept in file via context ...
+
 	loadinternal: function (tid, cnt) {
 		$.get(service_path + "/news/newsinfo/getbytid?pageno=1&pagesize=5&tid=" + tid, function (data) {
 			let obj = $.parseJSON(data);
@@ -167,6 +197,7 @@ let pageobj = {
 			$(".side_list").eq(cnt).html(result);
 		})
 	},
+
 	login: function () {
 		console.log("Login called");
 		$.post(service_path + "/news/users/login", {
@@ -245,7 +276,47 @@ let pageobj = {
 				}
 			}
 		});
+	},
+
+
+	// 搜索功能
+	initSearch: function () {
+		$("#searchBtn").click(function () {
+			pageobj.searchNews();
+		});
+
+		// 支持回车搜索
+		$("#searchInput").keypress(function (e) {
+			if (e.which == 13) {
+				pageobj.searchNews();
+			}
+		});
+
+		// 监听输入框变空时恢复列表
+		$("#searchInput").on("input", function () {
+			if ($(this).val().trim() === "") {
+				$("#pagination").show(); // 恢复分页显示
+				// 清空时，重新加载当前分类的全部新闻（即取消搜索过滤）
+				pageobj.loadnews(pageobj.currentTid);
+			}
+		});
+	},
+
+	searchNews: function () {
+		let keyword = $("#searchInput").val().trim();
+		if (!keyword) {
+			// 如果搜索框为空，显示当前分类的全部新闻
+			pageobj.pageno = 1;
+			pageobj.loadnews(pageobj.currentTid);
+			return;
+		}
+		// 在当前分类下搜索（如果 currentTid 为 -1 则是全局搜索）
+		pageobj.pageno = 1;
+		pageobj.loadnews(pageobj.currentTid);
 	}
 }
-$(pageobj.init);
+$(function () {
+	pageobj.init();
+	pageobj.initSearch();
+});
 

@@ -51,11 +51,41 @@ public class NewsService {
         return pt;
     }
 
-    public List<NewsModel> getnewsbykeyword(String keyword) {
+    public PagerTemplate getnewsbykeyword(int pageno, int pagesize, String keyword) {
         QueryWrapper<NewsModel> qw = new QueryWrapper<>();
         qw.like("ntitle", keyword); // 模糊查询标题
+        qw.eq("status", 1); // 只显示已审核的新闻
         qw.orderByDesc("createdate");
-        return new NewsModel().selectList(qw);
+
+        IPage<NewsModel> pager = new Page<>(pageno, pagesize);
+        IPage<NewsModel> mypage = new NewsModel().selectPage(pager, qw);
+
+        PagerTemplate pt = new PagerTemplate();
+        pt.setList(mypage.getRecords());
+        pt.setPageno(mypage.getCurrent());
+        pt.setPagesize(mypage.getSize());
+        pt.setTotal(mypage.getTotal());
+        pt.setTotalpage(mypage.getPages());
+        return pt;
+    }
+
+    public PagerTemplate getnewsbytidandkeyword(int pageno, int pagesize, int tid, String keyword) {
+        QueryWrapper<NewsModel> qw = new QueryWrapper<>();
+        qw.eq("tid", tid); // 按照分类过滤
+        qw.like("ntitle", keyword); // 模糊查询标题
+        qw.eq("status", 1); // 只显示已审核的新闻
+        qw.orderByDesc("createdate");
+
+        IPage<NewsModel> pager = new Page<>(pageno, pagesize);
+        IPage<NewsModel> mypage = new NewsModel().selectPage(pager, qw);
+
+        PagerTemplate pt = new PagerTemplate();
+        pt.setList(mypage.getRecords());
+        pt.setPageno(mypage.getCurrent());
+        pt.setPagesize(mypage.getSize());
+        pt.setTotal(mypage.getTotal());
+        pt.setTotalpage(mypage.getPages());
+        return pt;
     }
 
     public void save(NewsModel newsModel) {

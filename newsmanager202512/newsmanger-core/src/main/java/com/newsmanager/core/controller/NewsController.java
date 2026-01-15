@@ -50,8 +50,16 @@ public class NewsController {
 
     @GetMapping("/getnewsbykeyword")
     @Operation(summary = "根据关键字查询新闻")
-    public List<NewsModel> getnewsbykeyword(@RequestParam String keyword) {
-        return newsService.getnewsbykeyword(keyword);
+    public PagerTemplate getnewsbykeyword(@RequestParam int pageno, @RequestParam int pagesize,
+            @RequestParam String keyword) {
+        return newsService.getnewsbykeyword(pageno, pagesize, keyword);
+    }
+
+    @GetMapping("/getnewsbytidandkeyword")
+    @Operation(summary = "根据分类和关键字查询新闻")
+    public PagerTemplate getnewsbytidandkeyword(@RequestParam int pageno, @RequestParam int pagesize,
+            @RequestParam int tid, @RequestParam String keyword) {
+        return newsService.getnewsbytidandkeyword(pageno, pagesize, tid, keyword);
     }
 
     @PostMapping("/save")

@@ -3,6 +3,25 @@
     <!-- 顶部红色导航栏 -->
     <van-nav-bar title="新闻聚合" class="nav-header" />
     
+    <!-- 搜索栏 -->
+    <van-search
+      v-model="searchKeyword"
+      placeholder="请输入新闻关键词"
+      @search="onSearch"
+      @clear="onClearSearch"
+      background="#fff"
+    />
+
+    <!-- 系统公告 -->
+    <van-notice-bar
+      v-if="notices.length > 0"
+      left-icon="volume-o"
+      :text="noticeText"
+      mode="closeable"
+      scrollable
+      class="home-notice-bar"
+    />
+
     <!-- 主题栏 -->
     <div class="theme-bar">
       <b 
@@ -15,10 +34,15 @@
     </div>
 
     <!-- 轮播图功能 -->
-    <div class="swipe-container">
-      <van-swipe ref="swipeRef" class="my-swipe" :autoplay="3000" indicator-color="white">
-        <van-swipe-item v-for="(img, index) in images" :key="index">
-          <img :src="img" class="swipe-img" />
+    <div class="swipe-container" v-show="!isSearchMode">
+      <van-swipe ref="swipeRef" class="my-swipe" :autoplay="5000" indicator-color="white">
+        <van-swipe-item v-for="(slide, index) in slides" :key="index">
+          <div class="slide-wrapper">
+            <img :src="slide.image" class="swipe-img" />
+            <div class="slide-caption">
+              <span>{{ slide.title }}</span>
+            </div>
+          </div>
         </van-swipe-item>
       </van-swipe>
       <!-- 左侧导航按钮 -->
@@ -71,11 +95,12 @@ export default {
     return {
       active: 0,
       themelist: [],
-      images: [
-        require('@/assets/picture/trump.jpg'),
-        require('@/assets/picture/lzm.png'),
-        require('@/assets/picture/war.jpg'),
-        require('@/assets/picture/afd.jpg')
+      // 轮播图数据（图片+标题）
+      slides: [
+        { image: require('@/assets/picture/trump.jpg'), title: '特朗普：委内瑞拉将向美国移交数千万桶石油' },
+        { image: require('@/assets/picture/lzm.png'), title: '韩国总统李在明访华' },
+        { image: require('@/assets/picture/war.jpg'), title: '沙特主导联军：也门南方过渡委员会领导人逃往不明地点' },
+        { image: require('@/assets/picture/afd.jpg'), title: '《阿凡达：火与烬》加冕三连冠、全球票房破十亿' }
       ],
       // 新闻列表相关
       newsList: [],
@@ -83,11 +108,24 @@ export default {
       finished: false,
       pageno: 1,
       pagesize: 10,
-      currentTid: -1  // -1 表示全部
+      currentTid: -1,  // -1 表示全部
+      
+      // 搜索相关
+      searchKeyword: '',
+      isSearchMode: false,
+      
+      // 公告相关
+      notices: []
+    }
+  },
+  computed: {
+    noticeText() {
+      return this.notices.map(n => n.content).join(' | ');
     }
   },
   mounted() {
     this.init();
+    this.fetchNotices();
   },
   methods: {
     init() {
@@ -103,14 +141,57 @@ export default {
               data = [];
             }
           }
-          this.themelist = data;
+          // 在列表开头添加"全部"选项
+          this.themelist = [{ tid: -1, tname: '全部' }, ...data];
         })
         .catch(error => {
           console.error("Fetch themes error:", error);
         });
     },
+
+    // 搜索触发
+    onSearch(val) {
+        if(!val) return;
+        this.isSearchMode = true;
+        this.searchKeyword = val;
+        this.newsList = [];
+        this.finished = false;
+        this.loading = true;
+        this.pageno = 1;
+
+        // API 需要 pageno 和 pagesize 参数
+        let url = `${API_BASE_URL}/news/newsinfo/getnewsbykeyword?pageno=1&pagesize=50&keyword=${encodeURIComponent(val)}`;
+        axios.get(url).then(res => {
+            let data = res.data;
+            if (typeof data === "string") data = JSON.parse(data);
+            
+            // API 返回 { list: [...], totalpage: ... } 格式
+            if(data && data.list && data.list.length > 0) {
+                this.newsList = data.list;
+            } else {
+                this.$toast('未找到相关新闻');
+            }
+            this.loading = false;
+            this.finished = true; // 搜索接口一次性加载完
+        }).catch(err => {
+            console.error("Search error:", err);
+            this.$toast('搜索失败，请重试');
+            this.loading = false;
+            this.finished = true;
+        });
+    },
+
+    // 清除搜索
+    onClearSearch() {
+        this.isSearchMode = false;
+        this.searchKeyword = '';
+        this.selectTheme(-1); // 恢复默认列表
+    },
+
     // 加载新闻列表（无限滚动触发）
     onLoad() {
+      if(this.isSearchMode) return; // 搜索模式下不触发滚动加载
+
       let url = '';
       if (this.currentTid === -1) {
         url = `${API_BASE_URL}/news/newsinfo/get?pageno=${this.pageno}&pagesize=${this.pagesize}`;
@@ -150,14 +231,51 @@ export default {
     },
     // 选择主题分类
     selectTheme(tid) {
-      if (this.currentTid === tid) return;
+      if (this.currentTid === tid && !this.isSearchMode) return;
       this.currentTid = tid;
       // 重置列表
       this.newsList = [];
       this.pageno = 1;
       this.finished = false;
       this.loading = true;
-      this.onLoad();
+      
+      // 如果有搜索关键词，则在该分类下搜索
+      if (this.searchKeyword && this.searchKeyword.trim()) {
+        this.searchInCategory(tid, this.searchKeyword.trim());
+      } else {
+        this.isSearchMode = false;
+        this.onLoad();
+      }
+    },
+    
+    // 在指定分类下搜索
+    searchInCategory(tid, keyword) {
+      this.isSearchMode = true;
+      let url = '';
+      if (tid === -1) {
+        // 全部分类
+        url = `${API_BASE_URL}/news/newsinfo/getnewsbykeyword?pageno=1&pagesize=50&keyword=${encodeURIComponent(keyword)}`;
+      } else {
+        // 特定分类
+        url = `${API_BASE_URL}/news/newsinfo/getnewsbytidandkeyword?pageno=1&pagesize=50&tid=${tid}&keyword=${encodeURIComponent(keyword)}`;
+      }
+      
+      axios.get(url).then(res => {
+        let data = res.data;
+        if (typeof data === "string") data = JSON.parse(data);
+        
+        if(data && data.list && data.list.length > 0) {
+          this.newsList = data.list;
+        } else {
+          this.newsList = [];
+        }
+        this.loading = false;
+        this.finished = true;
+      }).catch(err => {
+        console.error("Search in category error:", err);
+        this.loading = false;
+        this.finished = true;
+      });
     },
     // 跳转到新闻详情
     goToDetail(nid) {
@@ -170,6 +288,25 @@ export default {
     // 切换到下一张图片
     nextSlide() {
       this.$refs.swipeRef.next();
+    },
+    // 获取通知公告
+    fetchNotices() {
+      axios.get(`${API_BASE_URL}/news/notice/getbytarget?target=0`)
+        .then(res => {
+          let data = res.data;
+          if (typeof data === "string") {
+            try {
+              data = JSON.parse(data);
+            } catch (e) {
+              console.error("Notice data parse error:", e);
+              data = [];
+            }
+          }
+          this.notices = data || [];
+        })
+        .catch(err => {
+          console.error("Fetch notices error:", err);
+        });
     }
   }
 }
@@ -193,6 +330,9 @@ export default {
   background: #fff;
   white-space: nowrap;
   overflow-x: auto;
+}
+.home-notice-bar {
+  margin-bottom: 5px;
 }
 .theme-item {
   font-size: 14px;
@@ -221,6 +361,25 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+/* 轮播图包装器 */
+.slide-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+/* 轮播图文字标题（渐变背景） */
+.slide-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 30px 15px 15px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.4;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 /* 轮播图导航按钮 */
 .swipe-nav {

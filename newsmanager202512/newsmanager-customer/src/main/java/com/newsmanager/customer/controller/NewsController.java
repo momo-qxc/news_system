@@ -41,12 +41,22 @@ public class NewsController {
                 SERVICE_PATH1 + "/news/getbytid?pageno=" + pageno + "&pagesize=" + pagesize + "&tid=" + tid,
                 String.class);
     }
+
     //
-    // @GetMapping("/getnewsbykeyword")
-    // @Operation(description = "根据关键字查询新闻")
-    // public List<NewsModel> getnewsbykeyword(@RequestParam String keyword){
-    // return newsService.getnewsbykeyword(keyword);
-    // }
+    @GetMapping("/getnewsbykeyword")
+    @Operation(description = "根据关键字查询新闻")
+    public String getnewsbykeyword(@RequestParam int pageno, @RequestParam int pagesize, @RequestParam String keyword) {
+        return restTemplate.getForObject(SERVICE_PATH1 + "/news/getnewsbykeyword?pageno=" + pageno + "&pagesize="
+                + pagesize + "&keyword=" + keyword, String.class);
+    }
+
+    @GetMapping("/getnewsbytidandkeyword")
+    @Operation(description = "根据分类和关键字查询新闻")
+    public String getnewsbytidandkeyword(@RequestParam int pageno, @RequestParam int pagesize, @RequestParam int tid,
+            @RequestParam String keyword) {
+        return restTemplate.getForObject(SERVICE_PATH1 + "/news/getnewsbytidandkeyword?pageno=" + pageno + "&pagesize="
+                + pagesize + "&tid=" + tid + "&keyword=" + keyword, String.class);
+    }
 
     @DeleteMapping("/del/{nid}")
     @Operation(description = "删除新闻文章")

@@ -6,37 +6,44 @@
 	<title>新闻详情 - 新闻中国</title>
 	<link href="css/main.css" rel="stylesheet" type="text/css" />
 	<style>
+		/* -----------------------------------------------------------
+		   正文/内容区域 - 现代风格 (保留用户喜欢的卡片式设计)
+		   ----------------------------------------------------------- */
+
 		:root {
-			--primary-color: #e60012;
-			--bg-color: #f7f8fa;
-			--card-bg: #fff;
-			--text-main: #323233;
-			--text-secondary: #969799;
-			--border-color: #ebedf0;
+			--primary-color: #0066cc;
+			/* 恢复蓝色系配色 */
+			--text-main: #333;
+			--text-secondary: #999;
+			--border-color: #eee;
 		}
 
+		/* 覆盖 body 背景色，使白色卡片更突出 */
 		body {
-			background-color: var(--bg-color);
-			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-			margin: 0;
-			color: var(--text-main);
+			background-color: #f7f8fa;
 		}
 
+		/* 容器样式：白色卡片、圆角、阴影 */
 		#container.news-container {
-			max-width: 960px;
+			width: 960px;
 			margin: 20px auto;
-			background: var(--card-bg);
-			border: none;
+			background: #fff;
 			border-radius: 12px;
+			/* 圆角 */
 			box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+			/* 阴影 */
 			padding: 40px;
-			min-height: 400px;
+			box-sizing: border-box;
+			border: none;
+			/* 去除可能存在的旧边框 */
 			height: auto !important;
+			/* 确保高度自适应 */
 			overflow: visible !important;
 		}
 
+		/* 标题样式 */
 		.news-title {
-			text-align: left;
+			text-align: center;
 			font-size: 28px;
 			font-weight: 700;
 			color: var(--text-main);
@@ -44,6 +51,25 @@
 			line-height: 1.4;
 		}
 
+		/* 元数据样式 (作者、日期、操作栏) */
+		.news-meta {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 20px 0;
+			border-bottom: 1px solid var(--border-color);
+			/* 细分割线 */
+			margin-bottom: 30px;
+			color: var(--text-secondary);
+			font-size: 14px;
+		}
+
+		.news-author {
+			color: #0066cc;
+			font-weight: 600;
+		}
+
+		/* 正文样式 */
 		.news-content {
 			line-height: 1.8;
 			font-size: 16px;
@@ -52,31 +78,9 @@
 			margin-bottom: 40px;
 		}
 
-		.news-meta {
-			display: flex;
-			justify-content: space-between;
-			align-items: flex-end;
-			padding-top: 20px;
-			border-top: 1px solid var(--border-color);
-			color: var(--text-secondary);
-			font-size: 14px;
-		}
-
-		.meta-info {
-			text-align: left;
-		}
-
-		.news-author {
-			font-weight: 600;
-			color: #0066cc;
-			margin-bottom: 6px;
-		}
-
-		.news-date {
-			color: var(--text-secondary);
-		}
-
-		/* 操作图标 */
+		/* -----------------------------------------------------------
+		   操作图标 (点赞/收藏)
+		   ----------------------------------------------------------- */
 		.action-icons {
 			display: flex;
 			gap: 20px;
@@ -85,32 +89,39 @@
 
 		.action-btn {
 			cursor: pointer;
-			font-size: 24px;
-			transition: all 0.2s;
-			user-select: none;
-			color: var(--text-secondary);
+			font-size: 22px;
+			color: #ccc;
+			transition: all 0.3s;
 		}
 
 		.action-btn:hover {
 			transform: scale(1.1);
-		}
-
-		.icon-heart.liked {
 			color: var(--primary-color);
 		}
 
-		.icon-star.collected {
-			color: #ffb400;
+		.icon-heart.active {
+			color: #ff4d4f;
 		}
 
-		/* 评论区域 */
+		/* 点赞红色 */
+		.icon-star.active {
+			color: #faad14;
+		}
+
+		/* 收藏黄色 */
+
+		/* -----------------------------------------------------------
+		   评论区域 - 现代风格 + 楼中楼支持
+		   ----------------------------------------------------------- */
 		.comment-section {
 			margin-top: 50px;
+			padding-top: 30px;
+			border-top: 1px solid var(--border-color);
 		}
 
 		.comment-section-title {
 			font-size: 20px;
-			font-weight: 600;
+			font-weight: 700;
 			margin-bottom: 20px;
 			padding-left: 10px;
 			border-left: 4px solid var(--primary-color);
@@ -120,166 +131,279 @@
 			background: #fdfdfd;
 			border: 1px solid var(--border-color);
 			border-radius: 8px;
-			padding: 16px;
+			padding: 20px;
 			margin-bottom: 30px;
-			transition: border-color 0.3s;
-		}
-
-		.comment-input-wrapper:focus-within {
-			border-color: #0066cc;
 		}
 
 		.comment-textarea {
 			width: 100%;
 			height: 80px;
-			border: none;
-			outline: none;
-			padding: 0;
+			padding: 10px;
+			border: 1px solid #ddd;
+			/* 默认灰色边框 */
+			border-radius: 4px;
+			resize: vertical;
+			box-sizing: border-box;
 			font-size: 14px;
-			resize: none;
-			background: transparent;
+			outline: none;
+			transition: border-color 0.3s;
+		}
+
+		.comment-textarea:focus {
+			border-color: var(--primary-color);
 		}
 
 		.comment-input-footer {
+			margin-top: 15px;
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			margin-top: 12px;
-			padding-top: 12px;
-			border-top: 1px solid #f5f5f5;
 		}
 
 		.comment-submit {
-			padding: 8px 24px;
-			background-color: #0066cc;
+			background-color: var(--primary-color);
 			color: white;
 			border: none;
-			border-radius: 4px;
+			padding: 8px 24px;
+			border-radius: 20px;
 			cursor: pointer;
-			font-weight: 500;
+			font-size: 14px;
+			font-weight: 600;
 			transition: background 0.3s;
 		}
 
 		.comment-submit:hover {
 			background-color: #0050a3;
+			/* 深蓝色 hover */
 		}
 
+		/* 评论列表容器 */
 		.comment-list {
 			margin-top: 20px;
 		}
 
-		/* 评论项优化 */
-		.comment-item {
-			padding: 20px 0;
-			border-bottom: 1px solid #f5f5f5;
+		/* 每一个评论主楼 (包含主评 + 所有回复) */
+		.comment-thread {
+			margin-bottom: 20px;
+			border-bottom: 1px solid #f0f0f0;
+			padding-bottom: 20px;
 		}
 
-		.comment-item:last-child {
+		.comment-thread:last-child {
 			border-bottom: none;
+		}
+
+		/* 评论基本项 (主评和回复共用) */
+		.comment-item {
+			padding: 10px 0;
 		}
 
 		.comment-user {
 			color: #333;
-			font-weight: 600;
-			font-size: 15px;
+			/* 用户名黑色/深灰色 */
+			font-weight: bold;
+			margin-right: 10px;
+			font-size: 14px;
+		}
+
+		.comment-time {
+			color: #999;
+			font-size: 12px;
 		}
 
 		.comment-content {
-			margin: 10px 0;
-			font-size: 15px;
+			margin-top: 8px;
+			color: #333;
 			line-height: 1.6;
+			font-size: 14px;
 		}
 
+		/* 楼中楼/回复列表容器 */
 		.reply-list {
-			margin-top: 15px;
+			background: #f9fafb;
+			/* 浅灰底色 */
 			padding: 15px;
-			background-color: #f9f9f9;
+			margin-top: 10px;
 			border-radius: 8px;
-		}
-
-		#top {
-			background: #fff;
-			border-bottom: 1px solid #ebedf0;
-			padding: 8px 20px;
 			font-size: 13px;
 		}
 
+		/* 楼中楼里的评论项 */
+		.reply-list .comment-item {
+			padding: 8px 0;
+			border-bottom: 1px dashed #eee;
+		}
+
+		.reply-list .comment-item:last-child {
+			border-bottom: none;
+		}
+
+		.comment-delete {
+			display: none;
+		}
+
+		.comment-item:hover .comment-delete {
+			display: inline-block;
+		}
+
+		/* 分页控件样式 */
+		.pagination {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			gap: 8px;
+			margin-top: 30px;
+			padding-bottom: 20px;
+		}
+
+		.page-btn {
+			padding: 6px 14px;
+			border: 1px solid #ddd;
+			background: #fff;
+			color: #333;
+			cursor: pointer;
+			border-radius: 4px;
+			font-size: 13px;
+			transition: all 0.2s;
+		}
+
+		.page-btn:hover {
+			border-color: var(--primary-color);
+			color: var(--primary-color);
+		}
+
+		.page-btn.active {
+			background: var(--primary-color);
+			color: #fff;
+			border-color: var(--primary-color);
+		}
+
+		.page-btn.disabled {
+			background: #f5f5f5;
+			color: #ccc;
+			cursor: not-allowed;
+			border-color: #eee;
+		}
+
+		/* -----------------------------------------------------------
+		   头部样式修复：强制覆盖旧样式，实现左右布局
+		   ----------------------------------------------------------- */
+		#top_login,
 		#top_login2 {
+			float: none !important;
+			width: 100% !important;
+			display: block;
+			/* 覆盖旧的 display，但会被 JS 的 show/hide 覆盖 */
+		}
+
+		.top-flex {
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			max-width: 960px;
-			margin: 0 auto;
+			width: 100%;
+			height: 30px;
+			/* 保持跟旧设计一致的高度 */
 		}
 
-		#nav {
-			max-width: 960px;
-			margin: 20px auto;
+		.login-inputs {
 			display: flex;
-			justify-content: space-between;
 			align-items: center;
 		}
 
-		#nav #logo img {
-			height: 50px;
+		.user-welcome {
+			font-size: 12px;
+			color: #333;
 		}
 
-		#friend {
-			max-width: 960px;
-			margin: 40px auto;
-			padding: 20px;
-			background: #fff;
-			border-radius: 8px;
+		.top-links {
+			display: flex;
+			align-items: center;
+			font-size: 12px;
 		}
 
-		#footer {
-			text-align: center;
-			padding: 40px 0;
-			color: #969799;
-			font-size: 13px;
-			background: #fff;
-			margin-top: 40px;
-			border-top: 1px solid #ebedf0;
+		.top-links a {
+			margin-left: 10px;
+			color: #666;
+			text-decoration: none;
+			padding: 0 5px;
+		}
+
+		.top-links a:hover {
+			color: #e60012;
+			text-decoration: underline;
+		}
+
+		/* 调整输入框样式以适应 Flex */
+		#top_login input {
+			vertical-align: middle;
+		}
+
+		/* 覆盖 main.css 中 #friend_logo 的绝对定位 */
+		#friend_logo {
+			position: static !important;
+			float: none !important;
 		}
 	</style>
 </head>
 
 <body>
+	<!-- 头部 -->
 	<div id="header">
 		<div id="top">
-			<div id="top_login" style="max-width: 960px; margin: 0 auto; display: none;">
-				<label>手机号:</label><input type="text" name="phone" value="" maxlength="11" size="11" />
-				<button id="getcode">发送验证码</button>
-				<label>验证码:</label><input type="password" name="code" value="" class="login_input" />
-				<input type="button" class="login_sub" value="登录" />&nbsp;<a href="regist.html">立即注册</a>
+			<!-- 未登录 -->
+			<div id="top_login">
+				<div class="top-flex">
+					<div class="login-inputs">
+						<label>手机号:</label><input type="text" name="phone" value="" maxlength="11" size="11" />
+						<button id="getcode">发送验证码</button>
+						<label>验证码:</label><input type="password" name="code" value="" class="login_input" />
+						<input type="button" class="login_sub" value="登录" />&nbsp;<a href="regist.html">立即注册</a>
+					</div>
+					<div class="top-links">
+						<a href="index.html">返回首页</a>
+						<img src="images/friend_logo.gif" alt="Google" id="friend_logo"
+							style="margin-left:10px; vertical-align:middle;" />
+					</div>
+				</div>
 			</div>
-			<div id="top_login2">
-				<div> 欢迎: <span id="currentuser" style="font-weight: 600; color: #0066cc;"></span></div>
-				<div>
-					<a href="index.html" style="text-decoration: none; color: #666;">返回首页</a>
-					<a href="#" id="exit" style="margin-left:15px; text-decoration: none; color: #666;">退出</a>
+
+			<!-- 已登录 -->
+			<div id="top_login2" style="display:none;">
+				<div class="top-flex">
+					<div class="user-welcome">
+						欢迎: <span id="currentuser" style="color:blue; font-weight:bold; margin:0 5px;"></span>
+					</div>
+					<div class="top-links">
+						<a href="index.html">返回首页</a>
+						<a href="#" id="myCollection">我的收藏</a>
+						<a href="collection.html" id="manageCollection">管理收藏</a>
+						<a href="history.html" id="viewHistory">浏览记录</a>
+						<a href="#" id="exit">退出</a>
+					</div>
 				</div>
 			</div>
 		</div>
 		<div id="nav">
 			<div id="logo"> <img src="images/logo.jpg" alt="新闻中国" /> </div>
-			<div id="a_b01"> <img src="images/a_b01.gif" alt="" /> </div>
+			<div id="a_b01" style="margin-top: 25px;"> <img src="images/a_b01.gif" alt="" /> </div>
 		</div>
 	</div>
+
+	<!-- 内容容器 -->
 	<div id="container" class="news-container">
 		<h1 class="news-title" id="newsTitle">加载中...</h1>
-		<div class="news-content" id="newsContent">
-			<!-- 新闻内容将在这里显示 -->
-		</div>
 		<div class="news-meta">
 			<div class="meta-info">
-				<div class="news-author" id="newsAuthor"></div>
-				<div class="news-date" id="newsDate"></div>
+				<span class="news-author" id="newsAuthor"></span> &nbsp;&nbsp;
+				<span class="news-date" id="newsDate"></span>
 			</div>
 			<div class="action-icons">
 				<span class="action-btn icon-heart" id="likeBtn" title="点赞">&#9829;</span>
 				<span class="action-btn icon-star" id="collectBtn" title="收藏">&#9734;</span>
 			</div>
+		</div>
+		<div class="news-content" id="newsContent">
+			<!-- 新闻内容将在这里显示 -->
 		</div>
 
 		<!-- 评论区域 -->
@@ -294,11 +418,17 @@
 					<button class="comment-submit" id="submitComment">发表评论</button>
 				</div>
 			</div>
+			<!-- 评论列表 -->
 			<div class="comment-list" id="commentList">
 				<!-- 评论列表将在这里显示 -->
 			</div>
+			<!-- 分页控件 -->
+			<div class="pagination" id="pagination">
+				<!-- 分页按钮将在这里显示 -->
+			</div>
 		</div>
 	</div>
+
 	<div id="friend">
 		<h1 class="friend_t"> <img src="images/friend_ico.gif" alt="合作伙伴" /> </h1>
 		<div class="friend_list">
