@@ -85,7 +85,7 @@ graph TD
 | **服务注册** | Netflix Eureka | 3节点集群 |
 | **API网关** | Spring Cloud Gateway | (WebFlux) |
 | **负载均衡** | Spring Cloud LoadBalancer | - |
-| **熔断降级** | Resilience4j | - |
+|              |                           |           |
 | **API文档** | SpringDoc OpenAPI | 2.6.0 |
 | **实体简化** | Lombok | 1.18.30 |
 | **工具类** | Apache Commons Lang3 | 3.18.0 |
