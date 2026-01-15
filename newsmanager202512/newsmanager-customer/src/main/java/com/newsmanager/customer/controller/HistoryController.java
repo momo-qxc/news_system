@@ -19,6 +19,16 @@ public class HistoryController {
         return restTemplate.getForObject(SERVICE_PATH1 + "/history/getdetail?phone=" + phone, String.class);
     }
 
+    @GetMapping("/getdetail_pager")
+    @Operation(description = "分页获取用户浏览历史详情")
+    public String getDetailPager(
+            @RequestParam String phone,
+            @RequestParam(defaultValue = "1") int pageno,
+            @RequestParam(defaultValue = "10") int pagesize) {
+        return restTemplate.getForObject(SERVICE_PATH1 + "/history/getdetail_pager?phone=" + phone + "&pageno=" + pageno
+                + "&pagesize=" + pagesize, String.class);
+    }
+
     @PostMapping("/save")
     @Operation(description = "记录浏览历史")
     public void save(@RequestParam String phone, @RequestParam String nid, @RequestParam String createdate) {

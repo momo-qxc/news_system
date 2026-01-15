@@ -24,4 +24,16 @@ public class TotalController {
     public String getNewsByTheme() {
         return restTemplate.getForObject(SERVICE_PATH1 + "/total/newsByTheme", String.class);
     }
+
+    @PostMapping("/ai/auditComments")
+    @Operation(description = "AI 智能审核评论")
+    public Object auditComments(@RequestBody Object contents) {
+        return restTemplate.postForObject(SERVICE_PATH1 + "/total/ai/auditComments", contents, Object.class);
+    }
+
+    @PostMapping("/ai/auditAll")
+    @Operation(description = "AI 智能审核所有待审核评论")
+    public Object auditAll() {
+        return restTemplate.postForObject(SERVICE_PATH1 + "/total/ai/auditAll", null, Object.class);
+    }
 }

@@ -11,6 +11,7 @@
             padding: 20px;
             min-height: 400px;
             background-color: #fff;
+            overflow: auto !important;
         }
 
         .history-item {
@@ -153,8 +154,16 @@
                 style="border-radius: 20px; padding: 6px 20px;">清空所有记录</button>
         </div>
         <div id="historyList">
-            <!-- 记录列表将在这里动态生成内容内容内容内容内容内容内容内容内容内容内容内容 -->
+            <!-- 记录列表将在这里动态生成 -->
         </div>
+        <!-- 分页控件 -->
+        <p align="right" id="pagination" style="margin-top: 20px; display: none;">
+            当前页数:[<span id="currentPage">1</span>/<span id="totalPages">1</span>]&nbsp;
+            <a href="#" id="firstPage">首页</a>
+            <a href="#" id="prevPage">上一页</a>
+            <a href="#" id="nextPage">下一页</a>
+            <a href="#" id="lastPage">末页</a>
+        </p>
     </div>
     <div id="footer">
         <p class="copyright"> Copyright &copy; 1999-2009 News China gov, All Right Reserver <br />

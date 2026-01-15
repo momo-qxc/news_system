@@ -217,6 +217,19 @@
 				<div v-if="activeMenu === 'comment'" class="content-card">
 					<div class="card-header">
 						<span>评论管理</span>
+						<div v-if="isSuperAdmin">
+							<el-button 
+								type="primary" 
+								size="small" 
+								icon="el-icon-cpu" 
+								:loading="loadingAI"
+								@click="handleSmartAudit">AI 智能审核</el-button>
+							<el-button 
+								v-if="Object.keys(aiResultMap).length > 0"
+								type="success" 
+								size="small" 
+								@click="applyAISuggestions">一键采纳 AI 建议</el-button>
+						</div>
 					</div>
 					<el-table :data="commentList" style="width: 100%">
 						<el-table-column prop="cid" label="评论ID" width="80"></el-table-column>
@@ -233,6 +246,24 @@
 								<el-tag :type="scope.row.status === 1 ? 'success' : 'warning'" size="mini">
 									{{ scope.row.status === 1 ? '已审核' : '待审核' }}
 								</el-tag>
+							</template>
+						</el-table-column>
+						<el-table-column label="AI 建议" width="180" v-if="Object.keys(aiResultMap).length > 0">
+							<template slot-scope="scope">
+								<div v-if="aiResultMap[scope.row.cid]">
+									<el-tag 
+										:type="aiResultMap[scope.row.cid].suggestion === 'pass' ? 'success' : (aiResultMap[scope.row.cid].suggestion === 'block' ? 'danger' : 'warning')" 
+										size="mini"
+										effect="dark">
+										{{ aiResultMap[scope.row.cid].suggestion === 'pass' ? '建议通过' : (aiResultMap[scope.row.cid].suggestion === 'block' ? '建议拦截' : '需审核') }}
+									</el-tag>
+									<!-- 增加忽略建议按钮 -->
+									<el-link type="info" :underline="false" style="margin-left: 10px; font-size: 12px;" @click="$delete(aiResultMap, scope.row.cid)">忽略</el-link>
+									<div style="font-size: 11px; color: #999; margin-top: 5px;">
+										{{ aiResultMap[scope.row.cid].reason }}
+									</div>
+								</div>
+								<span v-else style="color: #ccc;">-</span>
 							</template>
 						</el-table-column>
 						<el-table-column label="操作" width="160">
@@ -552,7 +583,10 @@ export default {
 			// 批量删除
 			batchDeleteDate: null,
 			batchDeleteCount: 0,
-			showBatchDeleteConfirm: false
+			showBatchDeleteConfirm: false,
+			// AI 智能审核
+			loadingAI: false,
+			aiResultMap: {} // cid -> AI result
 		};
 	},
 	computed: {
@@ -945,6 +979,67 @@ export default {
 						this.$message.error('删除失败');
 					});
 			}).catch(() => {});
+		},
+		// AI 智能审核 - 升级为审核所有待审核评论
+		handleSmartAudit() {
+			this.loadingAI = true;
+			axios.post('http://localhost:6060/news/total/ai/auditAll')
+				.then(res => {
+					if (res.data && typeof res.data === 'object' && !Array.isArray(res.data)) {
+						this.aiResultMap = res.data;
+						const count = Object.keys(res.data).length;
+						if (count === 0) {
+							this.$message.info('当前没有待审核的评论');
+						} else {
+							this.$message.success(`AI 智能审核完成，已分析 ${count} 条待审核评论`);
+						}
+					} else {
+						this.$message.error('AI 审核返回数据异常');
+					}
+				})
+				.catch(err => {
+					console.error(err);
+					this.$message.error('AI 审核请求失败，请检查后端服务');
+				})
+				.finally(() => {
+					this.loadingAI = false;
+				});
+		},
+		// 一键采纳 AI 建议
+		async applyAISuggestions() {
+			const cids = Object.keys(this.aiResultMap);
+			if (cids.length === 0) return;
+
+			let passCount = 0;
+			let blockCount = 0;
+
+			// 收集待通过和待删除的ID
+			for (const cid of cids) {
+				const result = this.aiResultMap[cid];
+				// 核心修复：检查当前列表中的评论状态，如果已经手动审过（status != 0），则忽略该 AI 建议
+				// 注意：因为现在是全局审核，commentList 可能只有当前页，所以我们主要依赖 aiResultMap
+				// 如果 commentList 中有该评论，则检查其状态
+				const commentInList = this.commentList.find(c => String(c.cid) === String(cid));
+				if (commentInList && commentInList.status !== 0) continue;
+
+				try {
+					if (result.suggestion === 'pass') {
+						await axios.put('http://localhost:6060/news/comment/check', null, {
+							params: { cid: cid, status: 1 }
+						});
+						passCount++;
+					} else if (result.suggestion === 'block') {
+						await axios.delete('http://localhost:6060/news/comment/del/' + cid);
+						blockCount++;
+					}
+				} catch (e) {
+					console.error('处理失败 cid:' + cid, e);
+				}
+			}
+
+			this.$message.success(`AI 建议处理完成：通过 ${passCount} 条，拦截删除 ${blockCount} 条`);
+			this.aiResultMap = {};
+			this.loadComments();
 		},
 		// 加载管理员列表
 		loadAdmins() {
