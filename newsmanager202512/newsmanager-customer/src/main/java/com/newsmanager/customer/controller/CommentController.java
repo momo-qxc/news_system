@@ -96,9 +96,15 @@ public class CommentController {
     @Operation(description = "获取所有评论(管理后台，分页)")
     public String getAll(
             @RequestParam(defaultValue = "1") int pageno,
-            @RequestParam(defaultValue = "10") int pagesize) {
-        return restTemplate.getForObject(SERVICE_PATH1 + "/comment/get?pageno=" + pageno + "&pagesize=" + pagesize,
-                String.class);
+            @RequestParam(defaultValue = "10") int pagesize,
+            @RequestParam(required = false) String sortProp,
+            @RequestParam(required = false) String sortOrder) {
+        String url = SERVICE_PATH1 + "/comment/get?pageno=" + pageno + "&pagesize=" + pagesize;
+        if (sortProp != null)
+            url += "&sortProp=" + sortProp;
+        if (sortOrder != null)
+            url += "&sortOrder=" + sortOrder;
+        return restTemplate.getForObject(url, String.class);
     }
 
     @PutMapping("/check")

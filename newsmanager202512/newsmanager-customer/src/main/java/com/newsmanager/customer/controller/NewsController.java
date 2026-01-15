@@ -22,9 +22,15 @@ public class NewsController {
 
     @GetMapping("/getAll")
     @Operation(description = "分页查询所有新闻(管理后台)")
-    public String getAll(@RequestParam int pageno, @RequestParam int pagesize) {
-        return restTemplate.getForObject(SERVICE_PATH1 + "/news/getAll?pageno=" + pageno + "&pagesize=" + pagesize,
-                String.class);
+    public String getAll(@RequestParam int pageno, @RequestParam int pagesize,
+            @RequestParam(required = false) String sortProp,
+            @RequestParam(required = false) String sortOrder) {
+        String url = SERVICE_PATH1 + "/news/getAll?pageno=" + pageno + "&pagesize=" + pagesize;
+        if (sortProp != null)
+            url += "&sortProp=" + sortProp;
+        if (sortOrder != null)
+            url += "&sortOrder=" + sortOrder;
+        return restTemplate.getForObject(url, String.class);
     }
 
     //
@@ -100,9 +106,15 @@ public class NewsController {
 
     @GetMapping("/getByDate")
     @Operation(description = "按日期分页查询新闻（管理后台）")
-    public String getByDate(@RequestParam int pageno, @RequestParam int pagesize, @RequestParam String date) {
-        return restTemplate.getForObject(
-                SERVICE_PATH1 + "/news/getByDate?pageno=" + pageno + "&pagesize=" + pagesize + "&date=" + date,
-                String.class);
+    public String getByDate(@RequestParam int pageno, @RequestParam int pagesize,
+            @RequestParam String date,
+            @RequestParam(required = false) String sortProp,
+            @RequestParam(required = false) String sortOrder) {
+        String url = SERVICE_PATH1 + "/news/getByDate?pageno=" + pageno + "&pagesize=" + pagesize + "&date=" + date;
+        if (sortProp != null)
+            url += "&sortProp=" + sortProp;
+        if (sortOrder != null)
+            url += "&sortOrder=" + sortOrder;
+        return restTemplate.getForObject(url, String.class);
     }
 }

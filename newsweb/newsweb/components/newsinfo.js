@@ -125,7 +125,11 @@ let newsinfoobj = {
         let nid = newsinfoobj.currentNid;
         $.post(service_path + "/news/like/toggle", { phone: phone, nid: nid }, function (data) {
             let result = typeof data === "string" ? JSON.parse(data) : data;
-            if (result.liked) $btn.addClass("liked"); else $btn.removeClass("liked");
+            if (result.liked) {
+                $btn.addClass("active");
+            } else {
+                $btn.removeClass("active");
+            }
         });
     },
 
@@ -134,29 +138,38 @@ let newsinfoobj = {
         if (!phone) return;
         $.get(service_path + "/news/like/check", { phone: phone, nid: nid }, function (data) {
             let result = typeof data === "string" ? JSON.parse(data) : data;
-            if (result.liked) $("#likeBtn").addClass("liked");
+            if (result.liked) {
+                $("#likeBtn").addClass("active");
+            } else {
+                $("#likeBtn").removeClass("active");
+            }
         });
     },
 
     handleCollect: function () {
-        // ... (Same logic) ...
         let phone = sessionStorage.getItem("cuser");
         if (!phone) { alert("用户未登录，请登录"); return; }
         let $btn = $("#collectBtn");
         let nid = newsinfoobj.currentNid;
-        // ... Logic same as before, simplified for brevity in this output, but I will write FULL logic ...
-        if ($btn.hasClass("collected")) {
+
+        if ($btn.hasClass("active")) {
             let colid = newsinfoobj.currentColid;
             if (colid) {
                 $.ajax({
-                    url: service_path + "/news/collection/del/" + colid, type: "DELETE", success: function () {
-                        $btn.removeClass("collected"); $btn.html("&#9734;"); newsinfoobj.currentColid = null; alert("已取消收藏");
+                    url: service_path + "/news/collection/del/" + colid,
+                    type: "DELETE",
+                    success: function () {
+                        $btn.removeClass("active");
+                        newsinfoobj.currentColid = null;
+                        alert("已取消收藏");
                     }
                 });
             }
         } else {
             $.post(service_path + "/news/collection/save", { phone: phone, nid: nid, createdate: new Date().toLocaleString() }, function (data) {
-                $btn.addClass("collected"); $btn.html("&#9733;"); alert("收藏成功！"); newsinfoobj.checkIfCollected(nid);
+                $btn.addClass("active");
+                alert("收藏成功！");
+                newsinfoobj.checkIfCollected(nid);
             });
         }
     },
@@ -169,7 +182,9 @@ let newsinfoobj = {
             if (list && list.length > 0) {
                 for (let i = 0; i < list.length; i++) {
                     if (list[i].nid == nid) {
-                        $("#collectBtn").addClass("collected"); $("#collectBtn").html("&#9733;"); newsinfoobj.currentColid = list[i].colid; break;
+                        $("#collectBtn").addClass("active");
+                        newsinfoobj.currentColid = list[i].colid;
+                        break;
                     }
                 }
             }

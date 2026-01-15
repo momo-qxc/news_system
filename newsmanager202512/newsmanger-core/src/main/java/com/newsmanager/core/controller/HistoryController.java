@@ -33,9 +33,9 @@ public class HistoryController {
         if (user == null)
             return new java.util.ArrayList<>();
 
-        // 2. 获取该用户的所有浏览历史，按时间降序
+        // 2. 获取该用户的所有浏览历史，按时间降序（使用 hid 倒序最快且准确）
         com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<HistoryModel> qw = new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<>();
-        qw.eq("uid", user.getUid()).orderByDesc("createdate");
+        qw.eq("uid", user.getUid()).orderByDesc("hid");
         List<HistoryModel> historyList = new HistoryModel().selectList(qw);
 
         // 3. 组装详情数据
@@ -70,7 +70,7 @@ public class HistoryController {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<HistoryModel> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(
                 pageno, pagesize);
         com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<HistoryModel> qw = new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<>();
-        qw.eq("uid", user.getUid()).orderByDesc("createdate");
+        qw.eq("uid", user.getUid()).orderByDesc("hid");
 
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<HistoryModel> historyPage = new HistoryModel()
                 .selectPage(page, qw);

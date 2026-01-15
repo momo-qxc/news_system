@@ -35,18 +35,18 @@
       <div class="action-bar">
         <div 
           class="action-item" 
-          :class="{ active: isLiked }"
+          :class="{ active: isLiked, liked: isLiked }"
           @click="handleLike"
         >
-          <van-icon :name="isLiked ? 'good-job' : 'good-job-o'" />
+          <van-icon :name="isLiked ? 'good-job' : 'good-job-o'" :color="isLiked ? '#e60012' : '#646566'" />
           <span>{{ isLiked ? '已点赞' : '点赞' }}</span>
         </div>
         <div 
           class="action-item" 
-          :class="{ active: isCollected }"
+          :class="{ active: isCollected, collected: isCollected }"
           @click="handleCollect"
         >
-          <van-icon :name="isCollected ? 'star' : 'star-o'" />
+          <van-icon :name="isCollected ? 'star' : 'star-o'" :color="isCollected ? '#faad14' : '#646566'" />
           <span>{{ isCollected ? '已收藏' : '收藏' }}</span>
         </div>
         <div class="action-item" @click="scrollToComment">
@@ -539,8 +539,11 @@ export default {
 .action-item .van-icon {
   font-size: 24px;
 }
-.action-item.active {
+.action-item.liked {
   color: #e60012;
+}
+.action-item.collected {
+  color: #faad14;
 }
 .action-item:active {
   transform: scale(0.95);

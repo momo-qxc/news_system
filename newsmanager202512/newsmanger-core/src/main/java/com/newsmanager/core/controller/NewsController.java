@@ -8,8 +8,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Tag(name = "新闻文章接口")
 @RestController
 @RequestMapping("/news")
@@ -26,8 +24,12 @@ public class NewsController {
 
     @GetMapping("/getAll")
     @Operation(summary = "分页查询所有新闻(管理后台)")
-    public PagerTemplate getAll(@RequestParam long pageno, @RequestParam long pagesize) {
-        return newsService.getAll(pageno, pagesize);
+    public PagerTemplate getAll(
+            @RequestParam long pageno,
+            @RequestParam long pagesize,
+            @RequestParam(required = false) String sortProp,
+            @RequestParam(required = false) String sortOrder) {
+        return newsService.getAll(pageno, pagesize, sortProp, sortOrder);
     }
 
     @GetMapping("/getone")
@@ -106,7 +108,12 @@ public class NewsController {
 
     @GetMapping("/getByDate")
     @Operation(summary = "按日期分页查询新闻（管理后台）")
-    public PagerTemplate getByDate(@RequestParam long pageno, @RequestParam long pagesize, @RequestParam String date) {
-        return newsService.getByDate(pageno, pagesize, date);
+    public PagerTemplate getByDate(
+            @RequestParam long pageno,
+            @RequestParam long pagesize,
+            @RequestParam String date,
+            @RequestParam(required = false) String sortProp,
+            @RequestParam(required = false) String sortOrder) {
+        return newsService.getByDate(pageno, pagesize, date, sortProp, sortOrder);
     }
 }

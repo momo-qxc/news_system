@@ -82,9 +82,9 @@
     <!-- 底部 Tabbar -->
     <van-tabbar v-model="active" active-color="#e60012" route>
       <van-tabbar-item icon="home-o" to="/">首页</van-tabbar-item>
-      <van-tabbar-item icon="search" to="/life">生活</van-tabbar-item>
-      <van-tabbar-item icon="friends-o" to="/traffic">交通</van-tabbar-item>
-      <van-tabbar-item icon="setting-o" to="/my">我的</van-tabbar-item>
+      <van-tabbar-item icon="location-o" to="/life">生活</van-tabbar-item>
+      <van-tabbar-item icon="guide-o" to="/traffic">交通</van-tabbar-item>
+      <van-tabbar-item icon="user-o" to="/my">我的</van-tabbar-item>
     </van-tabbar>
   </div>
 </template>

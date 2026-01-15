@@ -125,9 +125,22 @@ public class NewsService {
     }
 
     // 管理后台使用：获取所有新闻（不过滤status）
-    public PagerTemplate getAll(long pageno, long pagesize) {
+    public PagerTemplate getAll(long pageno, long pagesize, String sortProp, String sortOrder) {
         QueryWrapper<NewsModel> qw = new QueryWrapper<>();
-        qw.orderByDesc("createdate");
+
+        if (sortProp != null && !sortProp.isEmpty()) {
+            boolean isAsc = "ascending".equals(sortOrder);
+            if ("createdate".equals(sortProp)) {
+                qw.orderBy(true, isAsc, "STR_TO_DATE(REPLACE(createdate, '-', '/'), '%Y/%m/%d %H:%i:%s')");
+            } else if ("status".equals(sortProp)) {
+                qw.orderBy(true, isAsc, "status");
+            } else {
+                qw.orderBy(true, isAsc, "STR_TO_DATE(REPLACE(createdate, '-', '/'), '%Y/%m/%d %H:%i:%s')");
+            }
+        } else {
+            qw.orderByDesc("STR_TO_DATE(REPLACE(createdate, '-', '/'), '%Y/%m/%d %H:%i:%s')");
+        }
+
         IPage<NewsModel> pager = new Page<>(pageno, pagesize);
         IPage<NewsModel> mypage = new NewsModel().selectPage(pager, qw);
         PagerTemplate pt = new PagerTemplate();
@@ -160,10 +173,23 @@ public class NewsService {
     }
 
     // 按日期分页查询新闻（管理后台）
-    public PagerTemplate getByDate(long pageno, long pagesize, String date) {
+    public PagerTemplate getByDate(long pageno, long pagesize, String date, String sortProp, String sortOrder) {
         QueryWrapper<NewsModel> qw = new QueryWrapper<>();
         qw.apply("DATE(createdate) = {0}", date);
-        qw.orderByDesc("createdate");
+
+        if (sortProp != null && !sortProp.isEmpty()) {
+            boolean isAsc = "ascending".equals(sortOrder);
+            if ("createdate".equals(sortProp)) {
+                qw.orderBy(true, isAsc, "createdate");
+            } else if ("status".equals(sortProp)) {
+                qw.orderBy(true, isAsc, "status");
+            } else {
+                qw.orderByDesc("createdate");
+            }
+        } else {
+            qw.orderByDesc("createdate");
+        }
+
         IPage<NewsModel> pager = new Page<>(pageno, pagesize);
         IPage<NewsModel> mypage = new NewsModel().selectPage(pager, qw);
         PagerTemplate pt = new PagerTemplate();

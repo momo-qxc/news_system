@@ -16,18 +16,27 @@
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			padding: 10px 15px;
-			border-bottom: 1px solid #ddd;
+			padding: 12px 15px;
+			border-bottom: 1px solid #eee;
+			transition: background-color 0.2s;
 		}
 
 		.collection-item:hover {
-			background-color: #f5f5f5;
+			background-color: #f9f9f9;
+		}
+
+		.news-info {
+			flex: 3;
+			display: flex;
+			flex-direction: column;
 		}
 
 		.news-title {
-			flex: 2;
-			color: #0066cc;
+			color: #2d7dd2;
+			font-size: 16px;
 			text-decoration: none;
+			margin-bottom: 5px;
+			font-weight: 500;
 		}
 
 		.news-title:hover {
@@ -35,33 +44,75 @@
 		}
 
 		.news-date {
-			flex: 1;
-			color: #888;
-			text-align: center;
+			color: #999;
+			font-size: 12px;
 		}
 
-		/* 取消收藏按钮 - 可以修改这里的颜色 */
+		/* 取消收藏按钮样式统一 */
 		.btn-cancel {
-			background-color: #ff6600;
-			/* 背景颜色 */
-			color: white;
-			/* 文字颜色 */
+			background-color: #fff;
+			color: #ff6600;
 			border: 1px solid #ff6600;
-			/* 边框颜色 */
-			padding: 5px 15px;
+			padding: 4px 12px;
 			cursor: pointer;
-			border-radius: 3px;
+			border-radius: 4px;
+			font-size: 13px;
+			transition: all 0.2s;
 		}
 
 		.btn-cancel:hover {
-			background-color: #e55500;
-			/* 悬停时背景颜色 */
+			background-color: #ff6600;
+			color: #fff;
 		}
 
 		.empty-msg {
 			text-align: center;
 			color: #888;
 			padding: 50px;
+		}
+
+		/* 分页控件样式 */
+		.pagination-controls {
+			margin-top: 25px;
+			padding: 15px;
+			text-align: right;
+			border-top: 1px solid #eee;
+			font-size: 13px;
+			color: #666;
+		}
+
+		.pagination-controls a {
+			margin: 0 5px;
+			padding: 4px 10px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			color: #0066cc;
+			text-decoration: none;
+			transition: all 0.2s;
+		}
+
+		.pagination-controls a:hover {
+			background-color: #0066cc;
+			color: #fff;
+			border-color: #0066cc;
+		}
+
+		.pagination-controls span {
+			margin: 0 10px;
+			font-weight: bold;
+			color: #333;
+		}
+
+		.pagination-controls .disabled {
+			color: #ccc;
+			border-color: #eee;
+			cursor: not-allowed;
+		}
+
+		.pagination-controls .disabled:hover {
+			background-color: transparent;
+			color: #ccc;
+			border-color: #eee;
 		}
 	</style>
 </head>
@@ -95,6 +146,14 @@
 		<h2>我的收藏</h2>
 		<div id="collectionList">
 			<!-- 收藏列表将在这里动态生成 -->
+		</div>
+		<!-- 分页控件 -->
+		<div class="pagination-controls" id="pagination" style="display: none;">
+			当前页: [<span id="currentPage">1</span>/<span id="totalPages">1</span>]
+			<a href="javascript:void(0)" id="firstPage">首页</a>
+			<a href="javascript:void(0)" id="prevPage">上一页</a>
+			<a href="javascript:void(0)" id="nextPage">下一页</a>
+			<a href="javascript:void(0)" id="lastPage">末页</a>
 		</div>
 	</div>
 	<div id="friend">

@@ -28,8 +28,10 @@ public class CommentController {
     @Operation(summary = "分页查询所有评论（按时间倒序）")
     public PagerTemplate get(
             @RequestParam(defaultValue = "1") int pageno,
-            @RequestParam(defaultValue = "10") int pagesize) {
-        return commentService.get(pageno, pagesize);
+            @RequestParam(defaultValue = "10") int pagesize,
+            @RequestParam(required = false) String sortProp,
+            @RequestParam(required = false) String sortOrder) {
+        return commentService.get(pageno, pagesize, sortProp, sortOrder);
     }
 
     @GetMapping("/getbynid")

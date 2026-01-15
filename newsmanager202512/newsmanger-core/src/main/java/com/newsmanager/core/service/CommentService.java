@@ -21,9 +21,24 @@ public class CommentService {
     @Autowired
     private ICommentLike commentLikeMapper;
 
-    public PagerTemplate get(int pageno, int pagesize) {
+    public PagerTemplate get(int pageno, int pagesize, String sortProp, String sortOrder) {
         QueryWrapper<CommentModel> qw = new QueryWrapper<>();
-        qw.orderByDesc("cid"); // 按评论ID倒序（ID自增，越新ID越大）
+
+        // 动态排序逻辑
+        if (sortProp != null && !sortProp.isEmpty()) {
+            boolean isAsc = "ascending".equals(sortOrder);
+            if ("createdate".equals(sortProp)) {
+                // 使用 STR_TO_DATE 确保字符串日期按时间正确排序，处理 2026/1/8 vs 2026/1/14 的问题
+                qw.orderBy(true, isAsc, "STR_TO_DATE(REPLACE(createdate, '-', '/'), '%Y/%m/%d %H:%i:%s')");
+            } else if ("status".equals(sortProp)) {
+                qw.orderBy(true, isAsc, "status");
+            } else {
+                qw.orderByDesc("cid");
+            }
+        } else {
+            qw.orderByDesc("cid"); // 默认按ID倒序
+        }
+
         IPage<CommentModel> pager = new Page<>(pageno, pagesize);
         IPage<CommentModel> mypage = commentMapper.selectPage(pager, qw);
 

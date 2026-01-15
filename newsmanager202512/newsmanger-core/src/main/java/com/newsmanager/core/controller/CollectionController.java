@@ -26,6 +26,7 @@ public class CollectionController {
     public List<NewsModel> get(String phone) {
         QueryWrapper<CollectionModel> qw = new QueryWrapper<>();
         qw.eq("phone", phone);
+        qw.orderByDesc("colid");
         List<CollectionModel> list = new CollectionModel().selectList(qw);
         List newsids = new ArrayList();
         for (CollectionModel collectionModel : list) {
@@ -42,6 +43,7 @@ public class CollectionController {
     public List<java.util.Map<String, Object>> getDetail(String phone) {
         QueryWrapper<CollectionModel> qw = new QueryWrapper<>();
         qw.eq("phone", phone);
+        qw.orderByDesc("colid");
         List<CollectionModel> collectionList = new CollectionModel().selectList(qw);
 
         List<java.util.Map<String, Object>> result = new ArrayList<>();
@@ -55,6 +57,13 @@ public class CollectionController {
             result.add(item);
         }
         return result;
+    }
+
+    @GetMapping("/getdetailpaginated")
+    @Operation(summary = "分页查询收藏详情（包含标题和时间）")
+    public PagerTemplate getDetailPaginated(@RequestParam String phone, @RequestParam int pageno,
+            @RequestParam int pagesize) {
+        return collectionService.getDetailPaginated(phone, pageno, pagesize);
     }
 
     @GetMapping("/getbyphone")

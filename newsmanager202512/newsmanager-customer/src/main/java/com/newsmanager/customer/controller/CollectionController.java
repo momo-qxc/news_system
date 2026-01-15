@@ -26,6 +26,13 @@ public class CollectionController {
                 SERVICE_PATH1 + "/news/collection/getdetail?phone=" + phone, String.class);
     }
 
+    @GetMapping("/getdetailpaginated")
+    @Operation(description = "分页查询收藏详情（包含标题和时间）")
+    public String getDetailPaginated(@RequestParam String phone, @RequestParam int pageno, @RequestParam int pagesize) {
+        return restTemplate.getForObject(SERVICE_PATH1 + "/news/collection/getdetailpaginated?phone=" + phone
+                + "&pageno=" + pageno + "&pagesize=" + pagesize, String.class);
+    }
+
     @GetMapping("/getbyphone")
     @Operation(description = "根据手机号分页查询收藏的新闻")
     public String getByPhone(@RequestParam String phone, @RequestParam int pageno, @RequestParam int pagesize) {

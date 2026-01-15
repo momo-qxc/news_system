@@ -150,13 +150,13 @@
 								@click="previewBatchDelete">批量删除</el-button>
 						</div>
 					</div>
-					<el-table :data="newsList" style="width: 100%">
+					<el-table :data="newsList" style="width: 100%" @sort-change="handleNewsSort">
 						<el-table-column prop="nid" label="新闻ID" width="120" show-overflow-tooltip></el-table-column>
 						<el-table-column prop="ntitle" label="新闻标题" show-overflow-tooltip></el-table-column>
-						<el-table-column prop="createdate" label="创建时间" width="160"></el-table-column>
+						<el-table-column prop="createdate" label="创建时间" width="160" sortable="custom"></el-table-column>
 						<el-table-column prop="author" label="作者" width="80"></el-table-column>
 						<el-table-column prop="cnt" label="点赞" width="60"></el-table-column>
-						<el-table-column label="状态" width="70">
+						<el-table-column prop="status" label="状态" width="70" sortable="custom">
 							<template slot-scope="scope">
 								<el-tag :type="scope.row.status === 1 ? 'success' : 'danger'" size="mini">
 									{{ scope.row.status === 1 ? '通过' : '待审' }}
@@ -231,7 +231,7 @@
 								@click="applyAISuggestions">一键采纳 AI 建议</el-button>
 						</div>
 					</div>
-					<el-table :data="commentList" style="width: 100%">
+					<el-table :data="commentList" style="width: 100%" @sort-change="handleCommentSort">
 						<el-table-column prop="cid" label="评论ID" width="80"></el-table-column>
 						<el-table-column label="用户" width="100">
 							<template slot-scope="scope">
@@ -239,9 +239,9 @@
 							</template>
 						</el-table-column>
 						<el-table-column prop="content" label="评论内容" show-overflow-tooltip></el-table-column>
-						<el-table-column prop="createdate" label="评论时间" width="160"></el-table-column>
+						<el-table-column prop="createdate" label="评论时间" width="160" sortable="custom"></el-table-column>
 						<el-table-column prop="nid" label="新闻ID" width="100" show-overflow-tooltip></el-table-column>
-						<el-table-column label="状态" width="80">
+						<el-table-column prop="status" label="状态" width="80" sortable="custom">
 							<template slot-scope="scope">
 								<el-tag :type="scope.row.status === 1 ? 'success' : 'warning'" size="mini">
 									{{ scope.row.status === 1 ? '已审核' : '待审核' }}
@@ -585,6 +585,10 @@ export default {
 			batchDeleteCount: 0,
 			showBatchDeleteConfirm: false,
 			// AI 智能审核
+			commentSortProp: '',
+			commentSortOrder: '',
+			newsSortProp: '',
+			newsSortOrder: '',
 			loadingAI: false,
 			aiResultMap: {} // cid -> AI result
 		};
@@ -803,7 +807,9 @@ export default {
 			let url = 'http://localhost:6060/news/newsinfo/getAll';
 			const params = {
 				pageno: this.newsPageNo,
-				pagesize: this.newsPageSize
+				pagesize: this.newsPageSize,
+				sortProp: this.newsSortProp,
+				sortOrder: this.newsSortOrder
 			};
 
 			if (this.batchDeleteDate) {
@@ -818,6 +824,11 @@ export default {
 						this.newsTotal = res.data.total || 0;
 					}
 				}).catch(err => console.log(err));
+		},
+		handleNewsSort({ prop, order }) {
+			this.newsSortProp = prop;
+			this.newsSortOrder = order;
+			this.loadNews();
 		},
 		// 审核通过
 		approveNews(nid) {
@@ -914,7 +925,9 @@ export default {
 			axios.get('http://localhost:6060/news/comment/get', {
 				params: {
 					pageno: this.commentPageNo,
-					pagesize: this.commentPageSize
+					pagesize: this.commentPageSize,
+					sortProp: this.commentSortProp,
+					sortOrder: this.commentSortOrder
 				}
 			}).then(res => {
 				if (res.data && res.data.list) {
@@ -924,6 +937,11 @@ export default {
 					this.loadUsers();
 				}
 			}).catch(err => console.log(err));
+		},
+		handleCommentSort({ prop, order }) {
+			this.commentSortProp = prop;
+			this.commentSortOrder = order;
+			this.loadComments();
 		},
 		// 加载用户信息
 		loadUsers() {
