@@ -628,14 +628,10 @@ export default {
 			}
 		},
 		// 监听日期选择变化，按日期筛选新闻
-		batchDeleteDate(newDate) {
+		batchDeleteDate() {
 			if (this.activeMenu === 'news') {
 				this.newsPageNo = 1; // 重置页码
-				if (newDate) {
-					this.loadNewsByDate(newDate);
-				} else {
-					this.loadNews();
-				}
+				this.loadNews();
 			}
 		}
 	},
@@ -768,34 +764,26 @@ export default {
 					});
 			}).catch(() => {});
 		},
-		// 加载新闻列表（管理后台使用 getAll 获取所有新闻）
+		// 加载新闻列表（支持全量加载和按日期筛选）
 		loadNews() {
-			axios.get('http://localhost:6060/news/newsinfo/getAll', {
-				params: {
-					pageno: this.newsPageNo,
-					pagesize: this.newsPageSize
-				}
-			}).then(res => {
-				if (res.data && res.data.list) {
-					this.newsList = res.data.list;
-					this.newsTotal = res.data.total || 0;
-				}
-			}).catch(err => console.log(err));
-		},
-		// 按日期加载新闻列表
-		loadNewsByDate(date) {
-			axios.get('http://localhost:6060/news/newsinfo/getByDate', {
-				params: {
-					pageno: this.newsPageNo,
-					pagesize: this.newsPageSize,
-					date: date
-				}
-			}).then(res => {
-				if (res.data && res.data.list) {
-					this.newsList = res.data.list;
-					this.newsTotal = res.data.total || 0;
-				}
-			}).catch(err => console.log(err));
+			let url = 'http://localhost:6060/news/newsinfo/getAll';
+			const params = {
+				pageno: this.newsPageNo,
+				pagesize: this.newsPageSize
+			};
+
+			if (this.batchDeleteDate) {
+				url = 'http://localhost:6060/news/newsinfo/getByDate';
+				params.date = this.batchDeleteDate;
+			}
+
+			axios.get(url, { params })
+				.then(res => {
+					if (res.data && res.data.list) {
+						this.newsList = res.data.list;
+						this.newsTotal = res.data.total || 0;
+					}
+				}).catch(err => console.log(err));
 		},
 		// 审核通过
 		approveNews(nid) {

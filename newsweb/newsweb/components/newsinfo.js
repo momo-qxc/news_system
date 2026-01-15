@@ -186,6 +186,12 @@ let newsinfoobj = {
         let postData = { phone: phone, nid: nid, content: content, createdate: new Date().toLocaleString(), anonymous: isAnonymous };
         if (newsinfoobj.replyTo) { postData.pid = newsinfoobj.replyTo.cid; }
         $.post(service_path + "/news/comment/save", postData, function (data) {
+            let result = typeof data === "string" ? JSON.parse(data) : data;
+            if (result && result.success === false) {
+                // 敏感词检测失败
+                alert(result.message || "评论包含违禁词，请修改后重新提交");
+                return;
+            }
             alert(newsinfoobj.replyTo ? "回复成功！" : "评论成功！");
             $("#commentInput").val("");
             $("#anonymousCheck").prop("checked", false);

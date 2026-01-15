@@ -86,7 +86,7 @@ graph TD
 | **API网关** | Spring Cloud Gateway | (WebFlux) |
 | **负载均衡** | Spring Cloud LoadBalancer | - |
 |              |                           |           |
-| **API文档** | SpringDoc OpenAPI | 2.6.0 |
+| **API文档** | Swagger | 2.6.0 |
 | **实体简化** | Lombok | 1.18.30 |
 | **工具类** | Apache Commons Lang3 | 3.18.0 |
 | **架构规范** | COLA Component DTO | 4.3.2 |

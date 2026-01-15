@@ -367,7 +367,16 @@ export default {
           params.append('pid', this.replyTo.cid)
         }
         
-        await axios.post(`${API_BASE_URL}/news/comment/save`, params)
+        const res = await axios.post(`${API_BASE_URL}/news/comment/save`, params)
+        let data = res.data
+        if (typeof data === 'string') data = JSON.parse(data)
+        
+        if (data && data.success === false) {
+          // 敏感词检测失败
+          this.$toast.fail(data.message || '评论包含违禁词')
+          return
+        }
+        
         this.$toast.success(this.replyTo ? '回复成功' : '评论成功')
         
         this.commentContent = ''

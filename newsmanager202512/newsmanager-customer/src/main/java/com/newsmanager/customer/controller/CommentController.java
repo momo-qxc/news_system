@@ -46,7 +46,7 @@ public class CommentController {
 
     @PostMapping("/save")
     @Operation(description = "新增评论/回复")
-    public void save(@RequestParam String phone, @RequestParam String nid,
+    public String save(@RequestParam String phone, @RequestParam String nid,
             @RequestParam String content, @RequestParam(required = false) String createdate,
             @RequestParam(required = false) boolean anonymous,
             @RequestParam(required = false, defaultValue = "0") Integer pid) {
@@ -83,7 +83,7 @@ public class CommentController {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
-        restTemplate.postForObject(SERVICE_PATH1 + "/comment/save", request, String.class);
+        return restTemplate.postForObject(SERVICE_PATH1 + "/comment/save", request, String.class);
     }
 
     @DeleteMapping("/del/{cid}")

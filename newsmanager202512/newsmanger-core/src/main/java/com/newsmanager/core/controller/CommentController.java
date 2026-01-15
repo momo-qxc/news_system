@@ -3,12 +3,15 @@ package com.newsmanager.core.controller;
 import com.newsmanager.api.models.CommentModel;
 import com.newsmanager.api.models.PagerTemplate;
 import com.newsmanager.core.service.CommentService;
+import com.newsmanager.core.service.SensitiveWordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "评论相关接口")
 @RestController
@@ -17,6 +20,9 @@ public class CommentController {
 
     @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private SensitiveWordService sensitiveWordService;
 
     @GetMapping("/get")
     @Operation(summary = "分页查询所有评论（按时间倒序）")
@@ -52,13 +58,26 @@ public class CommentController {
 
     @PostMapping("/save")
     @Operation(summary = "新增评论")
-    // @Parameter(description = "评论实体类")
-    public void save(@ModelAttribute CommentModel commentModel) {
+    public Map<String, Object> save(@ModelAttribute CommentModel commentModel) {
+        Map<String, Object> result = new HashMap<>();
+
+        // 检查评论内容是否包含敏感词
+        String sensitiveWord = sensitiveWordService.findSensitiveWord(commentModel.getContent());
+        if (sensitiveWord != null) {
+            result.put("success", false);
+            result.put("message", "评论含有违禁词，请修改后重新提交");
+            return result;
+        }
+
         // 让数据库自动生成 cid
         commentModel.setCid(null);
         // 默认设置为待审核状态 (0)
         commentModel.setStatus(0);
         commentService.save(commentModel);
+
+        result.put("success", true);
+        result.put("message", "评论提交成功");
+        return result;
     }
 
     @DeleteMapping("/del/{cid}")

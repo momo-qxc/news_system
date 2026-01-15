@@ -183,12 +183,12 @@ let pageobj = {
 	loadinternal: function (tid, cnt) {
 		$.get(service_path + "/news/newsinfo/getbytid?pageno=1&pagesize=5&tid=" + tid, function (data) {
 			let obj = $.parseJSON(data);
-			let result = "	<marquee direction='up' scrollamount='2'><ul>";
+			let result = "<marquee direction='up' scrollamount='2' height='240'><ul>";
 			for (let i = 0; i < obj.list.length; i++) {
 				if (i != 0 && i % 5 == 0) {
-					result = "<li class='space'></li>";
+					result += "<li class='space'></li>";
 				}
-				result += " <li> <a href='#'><b> " + obj.list[i].ntitle + " </b></a> </li>";
+				result += " <li> <a href='newsinfo.html?nid=" + obj.list[i].nid + "'><b> " + obj.list[i].ntitle + " </b></a> </li>";
 			}
 			result += "</ul></marquee>";
 			$(".side_list").eq(cnt).html(result);
