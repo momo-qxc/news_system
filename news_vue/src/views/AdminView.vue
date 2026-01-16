@@ -223,7 +223,7 @@
 								size="small" 
 								icon="el-icon-cpu" 
 								:loading="loadingAI"
-								@click="handleSmartAudit">智能批量审核</el-button>
+								@click="handleSmartAudit">AI 智能审核</el-button>
 							<el-button 
 								v-if="Object.keys(aiResultMap).length > 0"
 								type="success" 
